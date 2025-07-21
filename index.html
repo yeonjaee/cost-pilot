@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 모델 API 비용 계산기 (고급 v3)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .focus-style:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+            border-color: #3B82F6;
+        }
+        .btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-4xl mx-auto p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">🤖 고급 AI 비용 계산기</h1>
+            <p class="text-gray-500 mt-2">컨텍스트 윈도우를 시뮬레이션하여 API 비용을 예측합니다.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- 왼쪽: 컨트롤 패널 -->
+            <div class="space-y-6">
+                <div>
+                    <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">1. 모델 선택</label>
+                    <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
+                        <option value="gpt-4.1-mini">OpenAI: GPT-4.1-Mini</option>
+                        <option value="gemini-2.5-pro">Google: Gemini 2.5 Pro</option>
+                        <option value="gemini-2.5-flash">Google: Gemini 2.5 Flash</option>
+                        <option value="claude-3.5-sonnet">Anthropic: Claude 3.5 Sonnet</option>
+                        <option value="claude-3.7-sonnet">Anthropic: Claude 3.7 Sonnet</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="context-window-select" class="block text-sm font-medium text-gray-700 mb-2">2. 최대 컨텍스트 윈도우</label>
+                    <select id="context-window-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
+                        <option value="4096">4K (4,096)</option>
+                        <option value="8192" selected>8K (8,192)</option>
+                        <option value="16384">16K (16,384)</option>
+                        <option value="32768">32K (32,768)</option>
+                        <option value="Infinity">무제한</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">3. 예상 입력 길이 (토큰)</label>
+                    <fieldset class="flex flex-wrap gap-x-4 gap-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="50" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">50</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">200</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="500" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">500</span></label>
+                    </fieldset>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">4. 예상 출력 길이 (토큰)</label>
+                    <fieldset class="flex flex-wrap gap-x-4 gap-y-2">
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">200</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="800" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">800</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="2000" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">2,000</span></label>
+                    </fieldset>
+                </div>
+
+                <div class="flex space-x-4 pt-4">
+                    <button id="add-turn-btn" class="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
+                    <button id="reset-btn" class="w-full py-3 px-4 bg-gray-600 text-white font-bold rounded-lg btn shadow-md">대화 초기화</button>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 결과 및 컨텍스트 -->
+            <div class="space-y-6">
+                <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">다음 호출 비용 예측</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-md font-semibold text-gray-700">예상 비용</p>
+                        <p id="preview-cost" class="text-2xl font-bold text-green-700">0.00 원</p>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-1 border-t border-green-200 pt-3">
+                        <p>• 시스템 프롬프트: <span id="preview-system-token" class="font-semibold"></span></p>
+                        <p>• 적용 컨텍스트 (윈도우): <span id="preview-context-token" class="font-semibold"></span></p>
+                        <p>• 사용자 입력: <span id="preview-user-input-token" class="font-semibold"></span></p>
+                        <p class="font-bold text-blue-700 mt-1">→ 총 입력 (Input): <span id="preview-total-input-token"></span></p>
+                        <p class="font-bold text-green-800">→ 총 출력 (Output): <span id="preview-output-token"></span></p>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">대화 요약</h3>
+                     <div class="flex justify-between items-center mb-4">
+                        <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
+                        <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
+                    </div>
+                     <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
+                        <p>• 총 누적 컨텍스트: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
+                        <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
+                    </div>
+                    <div class="mt-4">
+                         <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
+                         <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
+                             <p>아직 대화 기록이 없습니다.</p>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const modelPrices = {
+            'gpt-4.1-mini':      { input: 0.40, output: 1.60 },
+            'gemini-2.5-pro':    { input: 1.25, output: 10.00 },
+            'gemini-2.5-flash':  { input: 0.10, output: 0.40 },
+            'claude-3.5-sonnet': { input: 3.00, output: 15.00 },
+            'claude-3.7-sonnet': { input: 3.00, output: 15.00 }
+        };
+        const USD_TO_KRW = 1392;
+        const SYSTEM_PROMPT_TOKENS = 1152;
+
+        // --- STATE ---
+        let conversationHistory = []; // { turn, input, output }
+        let totalCostKRW = 0;
+
+        // --- DOM ELEMENTS ---
+        const dom = {
+            modelSelect: document.getElementById('model-select'),
+            contextWindowSelect: document.getElementById('context-window-select'),
+            addTurnBtn: document.getElementById('add-turn-btn'),
+            resetBtn: document.getElementById('reset-btn'),
+            
+            preview: {
+                cost: document.getElementById('preview-cost'),
+                systemToken: document.getElementById('preview-system-token'),
+                contextToken: document.getElementById('preview-context-token'),
+                userInputToken: document.getElementById('preview-user-input-token'),
+                totalInputToken: document.getElementById('preview-total-input-token'),
+                outputToken: document.getElementById('preview-output-token'),
+            },
+            
+            summary: {
+                totalCost: document.getElementById('summary-total-cost'),
+                contextToken: document.getElementById('summary-context-token'),
+                turnCount: document.getElementById('summary-turn-count'),
+                historyLog: document.getElementById('history-log'),
+            }
+        };
+
+        // --- UTILITY FUNCTIONS ---
+        const formatNumber = (num) => num.toLocaleString('ko-KR');
+        const formatKRW = (num) => num.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        function getSelectedValues() {
+            return {
+                model: dom.modelSelect.value,
+                maxWindow: dom.contextWindowSelect.value === 'Infinity' ? Infinity : parseInt(dom.contextWindowSelect.value, 10),
+                inputTokens: parseInt(document.querySelector('input[name="input-size"]:checked').value, 10),
+                outputTokens: parseInt(document.querySelector('input[name="output-size"]:checked').value, 10),
+            };
+        }
+
+        function calculateEffectiveContext(maxWindow) {
+            if (maxWindow === Infinity) {
+                return conversationHistory.reduce((sum, turn) => sum + turn.input + turn.output, 0);
+            }
+            
+            let effectiveContext = 0;
+            for (let i = conversationHistory.length - 1; i >= 0; i--) {
+                const turnTokens = conversationHistory[i].input + conversationHistory[i].output;
+                if (effectiveContext + turnTokens > maxWindow) {
+                    break;
+                }
+                effectiveContext += turnTokens;
+            }
+            return effectiveContext;
+        }
+
+        function previewCost() {
+            const { model, maxWindow, inputTokens, outputTokens } = getSelectedValues();
+            const effectiveContext = calculateEffectiveContext(maxWindow);
+            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens;
+
+            const prices = modelPrices[model];
+            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+            const turnCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+
+            // Update Preview UI
+            dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
+            dom.preview.systemToken.textContent = formatNumber(SYSTEM_PROMPT_TOKENS);
+            dom.preview.contextToken.textContent = formatNumber(effectiveContext);
+            dom.preview.userInputToken.textContent = formatNumber(inputTokens);
+            dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
+            dom.preview.outputToken.textContent = formatNumber(outputTokens);
+        }
+
+        function handleAddTurn() {
+            const { model, maxWindow, inputTokens, outputTokens } = getSelectedValues();
+            const effectiveContext = calculateEffectiveContext(maxWindow);
+            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens;
+            
+            const prices = modelPrices[model];
+            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+            const turnCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+
+            // Update state
+            totalCostKRW += turnCostKRW;
+            const newTurn = { turn: conversationHistory.length + 1, input: inputTokens, output: outputTokens };
+            conversationHistory.push(newTurn);
+            
+            // Update Summary UI
+            const totalAccumulatedContext = conversationHistory.reduce((sum, turn) => sum + turn.input + turn.output, 0);
+            dom.summary.totalCost.textContent = `${formatKRW(totalCostKRW)} 원`;
+            dom.summary.contextToken.textContent = formatNumber(totalAccumulatedContext);
+            dom.summary.turnCount.textContent = formatNumber(conversationHistory.length);
+            
+            // Add to history log
+            if (conversationHistory.length === 1) dom.summary.historyLog.innerHTML = "";
+            const logEntry = document.createElement('p');
+            logEntry.innerHTML = `<strong>Turn ${newTurn.turn}:</strong> In ${formatNumber(newTurn.input)} / Out ${formatNumber(newTurn.output)}`;
+            dom.summary.historyLog.appendChild(logEntry);
+            dom.summary.historyLog.scrollTop = dom.summary.historyLog.scrollHeight;
+
+            // Refresh preview for the next turn
+            previewCost();
+        }
+
+        function resetConversation() {
+            conversationHistory = [];
+            totalCostKRW = 0;
+            
+            dom.summary.historyLog.innerHTML = "<p>아직 대화 기록이 없습니다.</p>";
+            dom.summary.totalCost.textContent = `${formatKRW(0)} 원`;
+            dom.summary.contextToken.textContent = formatNumber(0);
+            dom.summary.turnCount.textContent = formatNumber(0);
+            
+            previewCost();
+        }
+
+        // --- EVENT LISTENERS ---
+        dom.addTurnBtn.addEventListener('click', handleAddTurn);
+        dom.resetBtn.addEventListener('click', resetConversation);
+        
+        [dom.modelSelect, dom.contextWindowSelect, ...document.querySelectorAll('input[name="input-size"]'), ...document.querySelectorAll('input[name="output-size"]')].forEach(el => {
+            el.addEventListener('change', previewCost);
+        });
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', resetConversation);
+    </script>
+</body>
+</html>
