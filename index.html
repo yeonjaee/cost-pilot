@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 모델 API 비용 계산기 (고급 v3)</title>
+    <title>AI 모델 API 비용 계산기 (고급 v4)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts (Noto Sans KR) -->
@@ -24,13 +24,22 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+        /* Simple transition for visibility */
+        .fade-in {
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
     <div class="w-full max-w-4xl mx-auto p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-gray-200">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800">LLM AI 비용 계산기</h1>
-            <p class="text-gray-500 mt-2">대화 기억 용량을 시뮬레이션하여 API 비용을 예측합니다.</p>
+            <p class="text-gray-500 mt-2">대화 기억 용량과 벡터 검색을 시뮬레이션하여 API 비용을 예측합니다.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -39,11 +48,11 @@
                 <div>
                     <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">1. 모델 선택</label>
                     <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                        <option value="gpt-4.1-mini">OpenAI: GPT-4.1-Mini</option>
+                        <option value="claude-4-sonnet">Anthropic: Claude 4 Sonnet</option>
                         <option value="gemini-2.5-pro">Google: Gemini 2.5 Pro</option>
                         <option value="gemini-2.5-flash">Google: Gemini 2.5 Flash</option>
-                        <option value="claude-3.5-sonnet">Anthropic: Claude 3.5 Sonnet</option>
-                        <option value="claude-3.7-sonnet">Anthropic: Claude 3.7 Sonnet</option>
+                        <option value="gpt-5-mini">OpenAI: GPT-5 Mini</option>
+                        <option value="grok-3-mini">xAI: Grok 3 Mini</option>
                     </select>
                 </div>
 
@@ -75,6 +84,14 @@
                         <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="2000" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">2,000(길게)</span></label>
                     </fieldset>
                 </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">5. 로어북 (벡터 검색) 사용</label>
+                     <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
+                        <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+                        <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
+                    </label>
+                </div>
 
                 <div class="flex space-x-4 pt-4">
                     <button id="add-turn-btn" class="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
@@ -93,6 +110,7 @@
                     <div class="text-sm text-gray-600 space-y-1 border-t border-green-200 pt-3">
                         <p>• 시스템 프롬프트: <span id="preview-system-token" class="font-semibold"></span></p>
                         <p>• 적용 컨텍스트 (기억 용량): <span id="preview-context-token" class="font-semibold"></span></p>
+                        <p id="preview-lorebook-p" class="hidden text-purple-700">• 로어북 문서 (벡터 검색): <span id="preview-lorebook-token" class="font-semibold"></span></p>
                         <p>• 사용자 입력: <span id="preview-user-input-token" class="font-semibold"></span></p>
                         <p class="font-bold text-blue-700 mt-1">→ 총 입력 (Input): <span id="preview-total-input-token"></span></p>
                         <p class="font-bold text-green-800">→ 총 출력 (Output): <span id="preview-output-token"></span></p>
@@ -102,12 +120,12 @@
                 <div class="p-6 bg-blue-50 rounded-lg border border-blue-200">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">대화 요약</h3>
                      <div class="flex justify-between items-center mb-4">
-                        <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
-                        <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
+                         <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
+                         <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
                     </div>
                      <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
-                        <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
-                        <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
+                         <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
+                         <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
                     </div>
                     <div class="mt-4">
                          <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
@@ -123,23 +141,32 @@
     <script>
         // --- CONFIGURATION ---
         const modelPrices = {
-            'gpt-4.1-mini':      { input: 0.40, output: 1.60 },
-            'gemini-2.5-pro':    { input: 1.25, output: 10.00 },
-            'gemini-2.5-flash':  { input: 0.10, output: 0.40 },
-            'claude-3.5-sonnet': { input: 3.00, output: 15.00 },
-            'claude-3.7-sonnet': { input: 3.00, output: 15.00 }
+            'claude-4-sonnet':   { input: 3.00,  output: 15.00 },
+            'gemini-2.5-pro':    { input: 1.25,  output: 10.00 },
+            'gemini-2.5-flash':  { input: 0.30,  output: 2.50  },
+            'gpt-5-mini':        { input: 0.25,  output: 2.00  }, // Note: Based on available pricing calculators, not official yet.
+            'grok-3-mini':       { input: 0.30,  output: 0.50  }
+        };
+        const retrievalPrices = {
+            // Cost for amazon.titan-embed-text-v2: $0.0001 per 1k tokens = $0.10 per 1M tokens
+            'embedding': { cost: 0.10 }, 
+            // Cost for vertexai/semantic-ranker-512 is complex (per node hour). 
+            // For this calculator, we'll only factor in the more significant embedding cost.
+            'ranking': { cost: 0.0 } 
         };
         const USD_TO_KRW = 1392;
-        const SYSTEM_PROMPT_TOKENS = 1152;
+        const SYSTEM_PROMPT_TOKENS = 1200;
+        const LOREBOOK_DOCUMENT_TOKENS = 500;
 
         // --- STATE ---
-        let conversationHistory = []; // { turn, input, output }
+        let conversationHistory = []; // { turn, input, output, usedLorebook }
         let totalCostKRW = 0;
 
         // --- DOM ELEMENTS ---
         const dom = {
             modelSelect: document.getElementById('model-select'),
             contextWindowSelect: document.getElementById('context-window-select'),
+            useLorebookCheckbox: document.getElementById('use-lorebook'),
             addTurnBtn: document.getElementById('add-turn-btn'),
             resetBtn: document.getElementById('reset-btn'),
             
@@ -147,6 +174,8 @@
                 cost: document.getElementById('preview-cost'),
                 systemToken: document.getElementById('preview-system-token'),
                 contextToken: document.getElementById('preview-context-token'),
+                lorebookP: document.getElementById('preview-lorebook-p'),
+                lorebookToken: document.getElementById('preview-lorebook-token'),
                 userInputToken: document.getElementById('preview-user-input-token'),
                 totalInputToken: document.getElementById('preview-total-input-token'),
                 outputToken: document.getElementById('preview-output-token'),
@@ -170,6 +199,7 @@
                 maxWindow: dom.contextWindowSelect.value === 'Infinity' ? Infinity : parseInt(dom.contextWindowSelect.value, 10),
                 inputTokens: parseInt(document.querySelector('input[name="input-size"]:checked').value, 10),
                 outputTokens: parseInt(document.querySelector('input[name="output-size"]:checked').value, 10),
+                useLorebook: dom.useLorebookCheckbox.checked,
             };
         }
 
@@ -190,14 +220,26 @@
         }
 
         function previewCost() {
-            const { model, maxWindow, inputTokens, outputTokens } = getSelectedValues();
+            const { model, maxWindow, inputTokens, outputTokens, useLorebook } = getSelectedValues();
             const effectiveContext = calculateEffectiveContext(maxWindow);
-            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens;
+            
+            let lorebookTokens = 0;
+            let retrievalCostKRW = 0;
+
+            if (useLorebook) {
+                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+                retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+            }
+
+            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens + lorebookTokens;
 
             const prices = modelPrices[model];
             const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
             const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
-            const turnCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+            const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+            
+            const turnCostKRW = llmCostKRW + retrievalCostKRW;
 
             // Update Preview UI
             dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
@@ -206,21 +248,45 @@
             dom.preview.userInputToken.textContent = formatNumber(inputTokens);
             dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
             dom.preview.outputToken.textContent = formatNumber(outputTokens);
+
+            if (useLorebook) {
+                dom.preview.lorebookToken.textContent = formatNumber(lorebookTokens);
+                dom.preview.lorebookP.classList.remove('hidden');
+            } else {
+                dom.preview.lorebookP.classList.add('hidden');
+            }
         }
 
         function handleAddTurn() {
-            const { model, maxWindow, inputTokens, outputTokens } = getSelectedValues();
+            const { model, maxWindow, inputTokens, outputTokens, useLorebook } = getSelectedValues();
             const effectiveContext = calculateEffectiveContext(maxWindow);
-            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens;
+            
+            let lorebookTokens = 0;
+            let retrievalCostKRW = 0;
+
+            if (useLorebook) {
+                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+                retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+            }
+            
+            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens + lorebookTokens;
             
             const prices = modelPrices[model];
             const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
             const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
-            const turnCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+            const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+            
+            const turnCostKRW = llmCostKRW + retrievalCostKRW;
 
             // Update state
             totalCostKRW += turnCostKRW;
-            const newTurn = { turn: conversationHistory.length + 1, input: inputTokens, output: outputTokens };
+            const newTurn = { 
+                turn: conversationHistory.length + 1, 
+                input: inputTokens, 
+                output: outputTokens,
+                usedLorebook: useLorebook 
+            };
             conversationHistory.push(newTurn);
             
             // Update Summary UI
@@ -232,7 +298,8 @@
             // Add to history log
             if (conversationHistory.length === 1) dom.summary.historyLog.innerHTML = "";
             const logEntry = document.createElement('p');
-            logEntry.innerHTML = `<strong>Turn ${newTurn.turn}:</strong> In ${formatNumber(newTurn.input)} / Out ${formatNumber(newTurn.output)}`;
+            const lorebookText = newTurn.usedLorebook ? ' <span class="text-purple-700 font-semibold">[+로어북]</span>' : '';
+            logEntry.innerHTML = `<strong>Turn ${newTurn.turn}:</strong> In ${formatNumber(newTurn.input)} / Out ${formatNumber(newTurn.output)}${lorebookText}`;
             dom.summary.historyLog.appendChild(logEntry);
             dom.summary.historyLog.scrollTop = dom.summary.historyLog.scrollHeight;
 
@@ -244,6 +311,7 @@
             conversationHistory = [];
             totalCostKRW = 0;
             
+            dom.useLorebookCheckbox.checked = false;
             dom.summary.historyLog.innerHTML = "<p>아직 대화 기록이 없습니다.</p>";
             dom.summary.totalCost.textContent = `${formatKRW(0)} 원`;
             dom.summary.contextToken.textContent = formatNumber(0);
@@ -256,7 +324,13 @@
         dom.addTurnBtn.addEventListener('click', handleAddTurn);
         dom.resetBtn.addEventListener('click', resetConversation);
         
-        [dom.modelSelect, dom.contextWindowSelect, ...document.querySelectorAll('input[name="input-size"]'), ...document.querySelectorAll('input[name="output-size"]')].forEach(el => {
+        [
+            dom.modelSelect, 
+            dom.contextWindowSelect, 
+            dom.useLorebookCheckbox,
+            ...document.querySelectorAll('input[name="input-size"]'), 
+            ...document.querySelectorAll('input[name="output-size"]')
+        ].forEach(el => {
             el.addEventListener('change', previewCost);
         });
 
