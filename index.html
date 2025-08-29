@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 모델 API 비용 계산기 (고급 v4)</title>
+    <title>AI 모델 API 비용 계산기 (고급 v4.1)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts (Noto Sans KR) -->
@@ -48,11 +48,11 @@
                 <div>
                     <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">1. 모델 선택</label>
                     <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                        <option value="claude-4-sonnet">Anthropic: Claude 4 Sonnet</option>
-                        <option value="gemini-2.5-pro">Google: Gemini 2.5 Pro</option>
-                        <option value="gemini-2.5-flash">Google: Gemini 2.5 Flash</option>
-                        <option value="gpt-5-mini">OpenAI: GPT-5 Mini</option>
-                        <option value="grok-3-mini">xAI: Grok 3 Mini</option>
+                        <option value="claude-4-sonnet">다이아챗: Claude 4 Sonnet</option>
+                        <option value="gemini-2.5-pro">플레임챗: Gemini 2.5 Pro</option>
+                        <option value="gemini-2.5-flash">스파크챗: Gemini 2.5 Flash</option>
+                        <option value="gpt-5-mini">그린챗: GPT-5 Mini</option>
+                        <option value="grok-3-mini">일반챗: Grok 3 Mini</option>
                     </select>
                 </div>
 
@@ -81,6 +81,7 @@
                     <fieldset class="flex flex-wrap gap-x-4 gap-y-2">
                         <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">200(짧게)</span></label>
                         <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="800" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">800(보통)</span></label>
+                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="1200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">1,200(중간)</span></label>
                         <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="2000" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">2,000(길게)</span></label>
                     </fieldset>
                 </div>
@@ -88,9 +89,9 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">5. 로어북 (벡터 검색) 사용</label>
                      <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
-                        <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
-                        <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
-                    </label>
+                         <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+                         <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
+                     </label>
                 </div>
 
                 <div class="flex space-x-4 pt-4">
@@ -122,11 +123,11 @@
                      <div class="flex justify-between items-center mb-4">
                          <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
                          <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
-                    </div>
+                     </div>
                      <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
                          <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
                          <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
-                    </div>
+                     </div>
                     <div class="mt-4">
                          <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
                          <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
