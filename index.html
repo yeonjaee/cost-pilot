@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 모델 API 비용 계산기 (고급 v4.1)</title>
+    <title>AI 모델 API 비용 계산기 (고급 v4.3)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts (Noto Sans KR) -->
@@ -24,14 +24,40 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        /* Simple transition for visibility */
-        .fade-in {
-            opacity: 1;
-            transition: opacity 0.3s ease-in-out;
+        /* Custom styles for range slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb; /* bg-gray-200 */
+            border-radius: 9999px;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity .15s ease-in-out;
         }
-        .fade-out {
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+        input[type="range"]:hover {
+            opacity: 1;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #3B82F6; /* bg-blue-600 */
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #3B82F6;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -63,27 +89,19 @@
                         <option value="8192" selected>8K (8,192)</option>
                         <option value="16384">16K (16,384)</option>
                         <option value="32768">32K (32,768)</option>
+                        <option value="131072">128K (131,072)</option>
                         <option value="Infinity">무제한</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">3. 예상 입력 길이 (토큰)</label>
-                    <fieldset class="flex flex-wrap gap-x-4 gap-y-2">
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="50" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">50(짧게)</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">200(보통)</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="input-size" value="500" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">500(길게)</span></label>
-                    </fieldset>
+                    <label for="input-slider" class="block text-sm font-medium text-gray-700 mb-2">3. 예상 입력 길이 (토큰): <span id="input-slider-value" class="font-bold text-blue-600">50</span></label>
+                    <input type="range" id="input-slider" min="0" max="5000" value="50" step="50" class="w-full">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">4. 예상 출력 길이 (토큰)</label>
-                    <fieldset class="flex flex-wrap gap-x-4 gap-y-2">
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">200(짧게)</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="800" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">800(보통)</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="1200" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">1,200(중간)</span></label>
-                        <label class="flex items-center space-x-2 cursor-pointer"><input type="radio" name="output-size" value="2000" class="h-4 w-4 text-blue-600 focus:ring-blue-500"><span class="text-sm">2,000(길게)</span></label>
-                    </fieldset>
+                    <label for="output-slider" class="block text-sm font-medium text-gray-700 mb-2">4. 예상 출력 길이 (토큰): <span id="output-slider-value" class="font-bold text-blue-600">800</span></label>
+                    <input type="range" id="output-slider" min="0" max="5000" value="800" step="50" class="w-full">
                 </div>
                 
                 <div>
@@ -142,11 +160,11 @@
     <script>
         // --- CONFIGURATION ---
         const modelPrices = {
-            'claude-4-sonnet':   { input: 3.00,  output: 15.00 },
-            'gemini-2.5-pro':    { input: 1.25,  output: 10.00 },
-            'gemini-2.5-flash':  { input: 0.30,  output: 2.50  },
-            'gpt-5-mini':        { input: 0.25,  output: 2.00  }, // Note: Based on available pricing calculators, not official yet.
-            'grok-3-mini':       { input: 0.30,  output: 0.50  }
+            'claude-4-sonnet':    { input: 3.00,  output: 15.00 },
+            'gemini-2.5-pro':     { input: 1.25,  output: 10.00 },
+            'gemini-2.5-flash':   { input: 0.30,  output: 2.50  },
+            'gpt-5-mini':         { input: 0.25,  output: 2.00  }, // Note: Based on available pricing calculators, not official yet.
+            'grok-3-mini':        { input: 0.30,  output: 0.50  }
         };
         const retrievalPrices = {
             // Cost for amazon.titan-embed-text-v2: $0.0001 per 1k tokens = $0.10 per 1M tokens
@@ -167,6 +185,10 @@
         const dom = {
             modelSelect: document.getElementById('model-select'),
             contextWindowSelect: document.getElementById('context-window-select'),
+            inputSlider: document.getElementById('input-slider'),
+            inputSliderValue: document.getElementById('input-slider-value'),
+            outputSlider: document.getElementById('output-slider'),
+            outputSliderValue: document.getElementById('output-slider-value'),
             useLorebookCheckbox: document.getElementById('use-lorebook'),
             addTurnBtn: document.getElementById('add-turn-btn'),
             resetBtn: document.getElementById('reset-btn'),
@@ -198,8 +220,8 @@
             return {
                 model: dom.modelSelect.value,
                 maxWindow: dom.contextWindowSelect.value === 'Infinity' ? Infinity : parseInt(dom.contextWindowSelect.value, 10),
-                inputTokens: parseInt(document.querySelector('input[name="input-size"]:checked').value, 10),
-                outputTokens: parseInt(document.querySelector('input[name="output-size"]:checked').value, 10),
+                inputTokens: parseInt(dom.inputSlider.value, 10),
+                outputTokens: parseInt(dom.outputSlider.value, 10),
                 useLorebook: dom.useLorebookCheckbox.checked,
             };
         }
@@ -313,6 +335,11 @@
             totalCostKRW = 0;
             
             dom.useLorebookCheckbox.checked = false;
+            dom.inputSlider.value = 50;
+            dom.outputSlider.value = 800;
+            dom.inputSliderValue.textContent = formatNumber(50);
+            dom.outputSliderValue.textContent = formatNumber(800);
+
             dom.summary.historyLog.innerHTML = "<p>아직 대화 기록이 없습니다.</p>";
             dom.summary.totalCost.textContent = `${formatKRW(0)} 원`;
             dom.summary.contextToken.textContent = formatNumber(0);
@@ -325,15 +352,26 @@
         dom.addTurnBtn.addEventListener('click', handleAddTurn);
         dom.resetBtn.addEventListener('click', resetConversation);
         
+        // Listen for changes on select boxes and checkbox
         [
             dom.modelSelect, 
             dom.contextWindowSelect, 
-            dom.useLorebookCheckbox,
-            ...document.querySelectorAll('input[name="input-size"]'), 
-            ...document.querySelectorAll('input[name="output-size"]')
+            dom.useLorebookCheckbox
         ].forEach(el => {
             el.addEventListener('change', previewCost);
         });
+
+        // Listen for input on sliders for real-time updates
+        dom.inputSlider.addEventListener('input', () => {
+            dom.inputSliderValue.textContent = formatNumber(dom.inputSlider.value);
+            previewCost();
+        });
+
+        dom.outputSlider.addEventListener('input', () => {
+            dom.outputSliderValue.textContent = formatNumber(dom.outputSlider.value);
+            previewCost();
+        });
+
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', resetConversation);
