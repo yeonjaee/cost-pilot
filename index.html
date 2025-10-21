@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 모델 API 비용 계산기 (v5.0)</title>
+    <title>AI 모델 API 비용 계산기 (v5.1)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,8 +82,16 @@
                 <div>
                     <label for="context-limit-select" class="block text-sm font-medium text-gray-700 mb-2">2. 컨텍스트 사용량 제한</label>
                     <select id="context-limit-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                        <option value="0.8" selected>모델 최대치의 80%</option>
+                        <option value="0.1">모델 최대치의 10%</option>
+                        <option value="0.2">모델 최대치의 20%</option>
+                        <option value="0.3">모델 최대치의 30%</option>
+                        <option value="0.4">모델 최대치의 40%</option>
                         <option value="0.5">모델 최대치의 50%</option>
+                        <option value="0.6">모델 최대치의 60%</option>
+                        <option value="0.7">모델 최대치의 70%</option>
+                        <option value="0.8" selected>모델 최대치의 80%</option>
+                        <option value="0.9">모델 최대치의 90%</option>
+                        <option value="1.0">모델 최대치의 100%</option>
                     </select>
                 </div>
 
@@ -257,7 +265,7 @@
             // Update Preview UI
             dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
             dom.preview.systemToken.textContent = `${formatNumber(SYSTEM_PROMPT_TOKENS)}`;
-            dom.preview.contextToken.textContent = `${formatNumber(effectiveContext)} / ${formatNumber(maxWindow)}`;
+            dom.preview.contextToken.textContent = `${formatNumber(effectiveContext)} / ${formatNumber(Math.floor(maxWindow))}`;
             dom.preview.userInputToken.textContent = formatNumber(inputTokens);
             dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
             dom.preview.outputToken.textContent = formatNumber(outputTokens);
