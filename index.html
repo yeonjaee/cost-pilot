@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 모델 API 비용 계산기 (v5.1)</title>
+    <title>AI 모델 API 비용 계산기 (v6.0)</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Token counting libraries -->
+    <script src="https://unpkg.com/@dqbd/tiktoken@1.0.0/dist/tiktoken.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-tiktoken@1.0.0/dist/tiktoken.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -28,7 +31,7 @@
             appearance: none;
             width: 100%;
             height: 8px;
-            background: #e5e7eb; /* bg-gray-200 */
+            background: #e5e7eb;
             border-radius: 9999px;
             outline: none;
             opacity: 0.9;
@@ -42,7 +45,7 @@
             appearance: none;
             width: 20px;
             height: 20px;
-            background: #3B82F6; /* bg-blue-600 */
+            background: #3B82F6;
             cursor: pointer;
             border-radius: 50%;
             border: 2px solid white;
@@ -57,70 +60,284 @@
             border: 2px solid white;
             box-shadow: 0 0 5px rgba(0,0,0,0.2);
         }
+        .info-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .info-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 300px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .info-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .scenario-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .scenario-card.selected {
+            border-color: #3B82F6;
+            background-color: #eff6ff;
+        }
     </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-4xl mx-auto p-6 sm:p-8 bg-white rounded-2xl shadow-xl border border-gray-200">
+<body class="bg-gray-50 min-h-screen p-4">
+    <div class="w-full max-w-6xl mx-auto">
+        <!-- Header -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">LLM AI 비용 계산기</h1>
-            <p class="text-gray-500 mt-2">대화 기억 용량과 벡터 검색을 시뮬레이션하여 API 비용을 예측합니다.</p>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">LLM AI 비용 계산기</h1>
+            <p class="text-gray-600 text-lg">캐릭터 챗봇 운영 비용을 정확하게 예측하고 최적화하세요</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="space-y-6">
+        <!-- Help Section -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
+            <h2 class="text-xl font-bold text-blue-800 mb-4">💡 이 도구가 필요한 이유</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700">
                 <div>
-                    <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">1. 모델 선택</label>
-                    <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                        <option value="claude-4.5-sonnet">Claude Sonnet 4.5 (200K)</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (1M)</option>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (1M)</option>
-                        <option value="grok-4-fast">Grok 4 Fast (2M)</option>
-                        <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (1M)</option>
-                    </select>
+                    <h3 class="font-semibold mb-2">🎯 정확한 비용 예측</h3>
+                    <p>실제 캐릭터 챗봇 사용 패턴을 반영하여 월 운영비를 미리 계산할 수 있습니다.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">📊 모델별 비교</h3>
+                    <p>다양한 AI 모델의 성능과 비용을 비교하여 최적의 선택을 할 수 있습니다.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">⚡ 컨텍스트 최적화</h3>
+                    <p>대화 기억 용량을 조절하여 비용을 절약하면서도 품질을 유지할 수 있습니다.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">🔍 벡터 검색 비용</h3>
+                    <p>로어북(문서 검색) 기능 사용 시 추가되는 비용도 정확히 계산됩니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Settings -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Scenario Selection -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">1. 사용 시나리오 선택</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="casual">
+                            <h3 class="font-bold text-gray-800 mb-2">💬 일반 대화</h3>
+                            <p class="text-sm text-gray-600 mb-2">일상적인 대화와 질문응답</p>
+                            <div class="text-xs text-gray-500">
+                                <p>• 입력: 20-50 토큰</p>
+                                <p>• 출력: 100-300 토큰</p>
+                                <p>• 로어북: 사용 안함</p>
+                            </div>
+                        </div>
+                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="story">
+                            <h3 class="font-bold text-gray-800 mb-2">📚 스토리텔링</h3>
+                            <p class="text-sm text-gray-600 mb-2">긴 이야기 생성과 역할극</p>
+                            <div class="text-xs text-gray-500">
+                                <p>• 입력: 50-150 토큰</p>
+                                <p>• 출력: 300-800 토큰</p>
+                                <p>• 로어북: 가끔 사용</p>
+                            </div>
+                        </div>
+                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="roleplay">
+                            <h3 class="font-bold text-gray-800 mb-2">🎭 역할극</h3>
+                            <p class="text-sm text-gray-600 mb-2">캐릭터 역할극과 상세한 상호작용</p>
+                            <div class="text-xs text-gray-500">
+                                <p>• 입력: 100-200 토큰</p>
+                                <p>• 출력: 200-500 토큰</p>
+                                <p>• 로어북: 자주 사용</p>
+                            </div>
+                        </div>
+                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="custom">
+                            <h3 class="font-bold text-gray-800 mb-2">⚙️ 사용자 정의</h3>
+                            <p class="text-sm text-gray-600 mb-2">직접 설정하여 정확한 계산</p>
+                            <div class="text-xs text-gray-500">
+                                <p>• 입력: 직접 설정</p>
+                                <p>• 출력: 직접 설정</p>
+                                <p>• 로어북: 선택 가능</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="context-limit-select" class="block text-sm font-medium text-gray-700 mb-2">2. 컨텍스트 사용량 제한</label>
-                    <select id="context-limit-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                        <option value="0.1">모델 최대치의 10%</option>
-                        <option value="0.2">모델 최대치의 20%</option>
-                        <option value="0.3">모델 최대치의 30%</option>
-                        <option value="0.4">모델 최대치의 40%</option>
-                        <option value="0.5">모델 최대치의 50%</option>
-                        <option value="0.6">모델 최대치의 60%</option>
-                        <option value="0.7">모델 최대치의 70%</option>
-                        <option value="0.8" selected>모델 최대치의 80%</option>
-                        <option value="0.9">모델 최대치의 90%</option>
-                        <option value="1.0">모델 최대치의 100%</option>
-                    </select>
+                <!-- Model and Context Settings -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">2. 모델 및 설정</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">
+                                AI 모델 선택
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>Claude Sonnet 4.5:</strong> 가장 고품질, 비용 높음<br>
+                                        <strong>Gemini 2.5 Pro:</strong> 균형잡힌 성능과 비용<br>
+                                        <strong>Gemini 2.5 Flash:</strong> 빠르고 저렴<br>
+                                        <strong>Grok 4 Fast:</strong> 매우 저렴, 최신 모델<br>
+                                        <strong>Gemini Flash Lite:</strong> 가장 저렴
+                                    </span>
+                                </span>
+                            </label>
+                            <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
+                                <option value="claude-4.5-sonnet">Claude Sonnet 4.5 (200K)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (1M)</option>
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (1M)</option>
+                                <option value="grok-4-fast">Grok 4 Fast (2M)</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (1M)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="context-limit-select" class="block text-sm font-medium text-gray-700 mb-2">
+                                컨텍스트 사용량 제한
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>컨텍스트:</strong> AI가 기억하는 대화 내용의 양<br>
+                                        <strong>높을수록:</strong> 더 긴 대화 기억, 비용 증가<br>
+                                        <strong>낮을수록:</strong> 짧은 기억, 비용 절약<br>
+                                        <strong>권장:</strong> 60-80% (품질과 비용의 균형)
+                                    </span>
+                                </span>
+                            </label>
+                            <select id="context-limit-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
+                                <option value="0.1">모델 최대치의 10%</option>
+                                <option value="0.2">모델 최대치의 20%</option>
+                                <option value="0.3">모델 최대치의 30%</option>
+                                <option value="0.4">모델 최대치의 40%</option>
+                                <option value="0.5">모델 최대치의 50%</option>
+                                <option value="0.6">모델 최대치의 60%</option>
+                                <option value="0.7">모델 최대치의 70%</option>
+                                <option value="0.8" selected>모델 최대치의 80%</option>
+                                <option value="0.9">모델 최대치의 90%</option>
+                                <option value="1.0">모델 최대치의 100%</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="input-slider" class="block text-sm font-medium text-gray-700 mb-2">3. 예상 입력 길이 (토큰): <span id="input-slider-value" class="font-bold text-blue-600">50</span></label>
-                    <input type="range" id="input-slider" min="0" max="5000" value="50" step="50" class="w-full">
+                <!-- System Prompt -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">3. 시스템 프롬프트 설정</h2>
+                    <div>
+                        <label for="system-prompt" class="block text-sm font-medium text-gray-700 mb-2">
+                            시스템 프롬프트 (캐릭터 설정)
+                            <span class="info-tooltip ml-1">
+                                <span class="text-blue-500">ℹ️</span>
+                                <span class="tooltip-text">
+                                    <strong>시스템 프롬프트:</strong> AI의 성격과 역할을 정의하는 지시사항<br>
+                                    <strong>예시:</strong> "당신은 친근한 고양이 캐릭터입니다. 항상 귀엽게 말하고 '냥'을 자주 사용하세요."<br>
+                                    <strong>토큰:</strong> 입력한 텍스트가 실제로 몇 개의 토큰으로 계산되는지 표시됩니다.
+                                </span>
+                            </span>
+                        </label>
+                        <textarea id="system-prompt" rows="4" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style" placeholder="예시: 당신은 친근한 고양이 캐릭터입니다. 항상 귀엽게 말하고 '냥'을 자주 사용하세요. 사용자와 함께 놀고 싶어합니다.">당신은 친근한 고양이 캐릭터입니다. 항상 귀엽게 말하고 '냥'을 자주 사용하세요. 사용자와 함께 놀고 싶어합니다.</textarea>
+                        <div class="mt-2 text-sm text-gray-600">
+                            <span>실제 토큰 수: </span>
+                            <span id="system-token-count" class="font-bold text-blue-600">0</span>
+                            <span> 토큰</span>
+                            <span class="info-tooltip ml-1">
+                                <span class="text-blue-500">ℹ️</span>
+                                <span class="tooltip-text">
+                                    <strong>토큰 계산 방식:</strong><br>
+                                    • <strong>tiktoken 라이브러리</strong> 사용 (가능한 경우)<br>
+                                    • <strong>모델별 최적화</strong>: Claude/GPT는 정확한 토큰화<br>
+                                    • <strong>폴백 방식</strong>: 한국어 1글자≈1토큰<br><br>
+                                    <strong>참고:</strong> tiktoken이 로드되지 않으면 근사치를 사용합니다.
+                                </span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="output-slider" class="block text-sm font-medium text-gray-700 mb-2">4. 예상 출력 길이 (토큰): <span id="output-slider-value" class="font-bold text-blue-600">800</span></label>
-                    <input type="range" id="output-slider" min="0" max="5000" value="800" step="50" class="w-full">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">5. 로어북 (벡터 검색) 사용</label>
-                     <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
-                         <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
-                         <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
-                     </label>
+                <!-- Token Settings -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">4. 토큰 설정</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="input-slider" class="block text-sm font-medium text-gray-700 mb-2">
+                                예상 입력 길이 (토큰): 
+                                <span id="input-slider-value" class="font-bold text-blue-600">50</span>
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>입력 토큰:</strong> 사용자가 보내는 메시지의 길이<br>
+                                        <strong>예시:</strong><br>
+                                        • "안녕" = 약 2 토큰<br>
+                                        • "오늘 날씨가 어때?" = 약 8 토큰<br>
+                                        • "좀 더 자세히 설명해줘" = 약 10 토큰
+                                    </span>
+                                </span>
+                            </label>
+                            <input type="range" id="input-slider" min="0" max="5000" value="50" step="50" class="w-full">
+                        </div>
+
+                        <div>
+                            <label for="output-slider" class="block text-sm font-medium text-gray-700 mb-2">
+                                예상 출력 길이 (토큰): 
+                                <span id="output-slider-value" class="font-bold text-blue-600">800</span>
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>출력 토큰:</strong> AI가 생성하는 응답의 길이<br>
+                                        <strong>예시:</strong><br>
+                                        • 짧은 답변 = 50-100 토큰<br>
+                                        • 일반적인 답변 = 200-500 토큰<br>
+                                        • 긴 스토리 = 500-2000 토큰
+                                    </span>
+                                </span>
+                            </label>
+                            <input type="range" id="output-slider" min="0" max="5000" value="800" step="50" class="w-full">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            로어북 (벡터 검색) 사용
+                            <span class="info-tooltip ml-1">
+                                <span class="text-blue-500">ℹ️</span>
+                                <span class="tooltip-text">
+                                    <strong>로어북:</strong> AI가 참조할 수 있는 추가 문서나 정보<br>
+                                    <strong>사용 예시:</strong> 캐릭터 설정, 세계관 정보, 이벤트 스크립트 등<br>
+                                    <strong>비용:</strong> 문서 검색을 위한 추가 비용이 발생합니다
+                                </span>
+                            </span>
+                        </label>
+                        <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
+                            <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+                            <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="flex space-x-4 pt-4">
-                    <button id="add-turn-btn" class="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
-                    <button id="reset-btn" class="w-full py-3 px-4 bg-gray-600 text-white font-bold rounded-lg btn shadow-md">대화 초기화</button>
+                <!-- Action Buttons -->
+                <div class="flex space-x-4">
+                    <button id="add-turn-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
+                    <button id="reset-btn" class="flex-1 py-3 px-4 bg-gray-600 text-white font-bold rounded-lg btn shadow-md">대화 초기화</button>
                 </div>
             </div>
 
+            <!-- Right Column: Results -->
             <div class="space-y-6">
-                <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                <!-- Next Call Cost -->
+                <div class="p-6 bg-green-50 rounded-xl border border-green-200 shadow-lg">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">다음 호출 비용 예측</h3>
                     <div class="flex justify-between items-center mb-4">
                         <p class="text-md font-semibold text-gray-700">예상 비용</p>
@@ -136,21 +353,40 @@
                     </div>
                 </div>
 
-                <div class="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                <!-- Conversation Summary -->
+                <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 shadow-lg">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">대화 요약</h3>
-                     <div class="flex justify-between items-center mb-4">
-                         <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
-                         <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
-                     </div>
-                     <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
-                         <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
-                         <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
-                     </div>
+                    <div class="flex justify-between items-center mb-4">
+                        <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
+                        <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
+                        <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
+                        <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
+                    </div>
                     <div class="mt-4">
-                         <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
-                         <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
-                             <p>아직 대화 기록이 없습니다.</p>
-                         </div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
+                        <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
+                            <p>아직 대화 기록이 없습니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Estimate -->
+                <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 shadow-lg">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">월간 비용 추정</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">일일 대화 턴 수:</span>
+                            <input type="number" id="daily-turns" value="100" min="1" max="10000" class="w-20 p-1 text-sm border rounded text-center">
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">월간 예상 비용:</span>
+                            <span id="monthly-cost" class="font-bold text-purple-700 text-lg">0원</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-2">
+                            <p>※ 실제 사용량에 따라 차이가 있을 수 있습니다.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,21 +403,31 @@
             'gemini-2.5-flash-lite':  { input: 0.10,  output: 0.40,  context: 1048576 }
         };
         const retrievalPrices = {
-            'embedding': { cost: 0.10 }, // $0.10 per 1M tokens
+            'embedding': { cost: 0.10 },
             'ranking': { cost: 0.0 } 
         };
         const USD_TO_KRW = 1392;
-        const SYSTEM_PROMPT_TOKENS = 2500;
         const LOREBOOK_DOCUMENT_TOKENS = 500;
 
+        // Scenario presets
+        const scenarioPresets = {
+            'casual': { input: 30, output: 200, lorebook: false },
+            'story': { input: 100, output: 600, lorebook: true },
+            'roleplay': { input: 150, output: 400, lorebook: true },
+            'custom': { input: 50, output: 800, lorebook: false }
+        };
+
         // --- STATE ---
-        let conversationHistory = []; // { turn, input, output, usedLorebook }
+        let conversationHistory = [];
         let totalCostKRW = 0;
+        let currentScenario = 'casual';
 
         // --- DOM ELEMENTS ---
         const dom = {
             modelSelect: document.getElementById('model-select'),
             contextLimitSelect: document.getElementById('context-limit-select'),
+            systemPrompt: document.getElementById('system-prompt'),
+            systemTokenCount: document.getElementById('system-token-count'),
             inputSlider: document.getElementById('input-slider'),
             inputSliderValue: document.getElementById('input-slider-value'),
             outputSlider: document.getElementById('output-slider'),
@@ -189,6 +435,7 @@
             useLorebookCheckbox: document.getElementById('use-lorebook'),
             addTurnBtn: document.getElementById('add-turn-btn'),
             resetBtn: document.getElementById('reset-btn'),
+            dailyTurns: document.getElementById('daily-turns'),
             
             preview: {
                 cost: document.getElementById('preview-cost'),
@@ -206,6 +453,10 @@
                 contextToken: document.getElementById('summary-context-token'),
                 turnCount: document.getElementById('summary-turn-count'),
                 historyLog: document.getElementById('history-log'),
+            },
+            
+            monthly: {
+                cost: document.getElementById('monthly-cost')
             }
         };
 
@@ -213,15 +464,111 @@
         const formatNumber = (num) => num.toLocaleString('ko-KR');
         const formatKRW = (num) => num.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+        // Token estimation with multiple methods
+        function estimateTokens(text) {
+            if (!text) return 0;
+            
+            // Try to use tiktoken if available
+            if (typeof tiktoken !== 'undefined') {
+                try {
+                    const encoding = tiktoken.get_encoding("cl100k_base");
+                    return encoding.encode(text).length;
+                } catch (e) {
+                    console.log("tiktoken not available, using fallback");
+                }
+            }
+            
+            // Fallback: Multiple estimation methods
+            const koreanChars = (text.match(/[가-힣]/g) || []).length;
+            const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
+            const otherChars = text.length - koreanChars - (text.match(/[a-zA-Z]+/g) || []).join('').length;
+            const simpleEstimate = Math.ceil(koreanChars + (englishWords * 1.3) + (otherChars * 0.5));
+            
+            const charBasedEstimate = Math.ceil(text.length * 0.75);
+            const words = text.split(/\s+/).filter(word => word.length > 0);
+            const wordBasedEstimate = Math.ceil(words.length * 1.3);
+            
+            return Math.max(simpleEstimate, charBasedEstimate, wordBasedEstimate);
+        }
+
+        // Model-specific token counting
+        function estimateTokensByModel(text, model) {
+            if (!text) return 0;
+            
+            // Try tiktoken for OpenAI models
+            if (model.includes('gpt') || model.includes('claude')) {
+                if (typeof tiktoken !== 'undefined') {
+                    try {
+                        const encoding = tiktoken.get_encoding("cl100k_base");
+                        return encoding.encode(text).length;
+                    } catch (e) {
+                        console.log("tiktoken failed, using fallback");
+                    }
+                }
+            }
+            
+            // Fallback to general estimation
+            return estimateTokens(text);
+        }
+
+        // More accurate token counting using tiktoken-like approach
+        function estimateTokensAdvanced(text) {
+            if (!text) return 0;
+            
+            // This is a simplified version of how tiktoken works
+            let tokens = 0;
+            let i = 0;
+            
+            while (i < text.length) {
+                const char = text[i];
+                
+                // Korean characters (most common case)
+                if (/[가-힣]/.test(char)) {
+                    tokens += 1;
+                }
+                // English letters
+                else if (/[a-zA-Z]/.test(char)) {
+                    // Count consecutive letters as one token
+                    let wordLength = 0;
+                    while (i < text.length && /[a-zA-Z]/.test(text[i])) {
+                        wordLength++;
+                        i++;
+                    }
+                    i--; // Adjust for the loop increment
+                    tokens += Math.ceil(wordLength / 4); // Roughly 4 characters per token
+                }
+                // Numbers
+                else if (/[0-9]/.test(char)) {
+                    let numLength = 0;
+                    while (i < text.length && /[0-9]/.test(text[i])) {
+                        numLength++;
+                        i++;
+                    }
+                    i--; // Adjust for the loop increment
+                    tokens += Math.ceil(numLength / 3); // Roughly 3 digits per token
+                }
+                // Punctuation and spaces
+                else {
+                    tokens += 1;
+                }
+                
+                i++;
+            }
+            
+            return tokens;
+        }
+
         function getSelectedValues() {
             const model = dom.modelSelect.value;
             const modelInfo = modelPrices[model];
             const contextLimit = parseFloat(dom.contextLimitSelect.value);
             const maxWindow = modelInfo.context * contextLimit;
+            const systemTokens = estimateTokensByModel(dom.systemPrompt.value, model);
             
             return {
                 model: model,
                 maxWindow: maxWindow,
+                systemTokens: systemTokens,
                 inputTokens: parseInt(dom.inputSlider.value, 10),
                 outputTokens: parseInt(dom.outputSlider.value, 10),
                 useLorebook: dom.useLorebookCheckbox.checked,
@@ -241,7 +588,7 @@
         }
 
         function previewCost() {
-            const { model, maxWindow, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
             const effectiveContext = calculateEffectiveContext(maxWindow);
             
             let lorebookTokens = 0;
@@ -253,7 +600,7 @@
                 retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
             }
 
-            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens + lorebookTokens;
+            const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
 
             const prices = modelPrices[model];
             const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
@@ -264,7 +611,7 @@
 
             // Update Preview UI
             dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
-            dom.preview.systemToken.textContent = `${formatNumber(SYSTEM_PROMPT_TOKENS)}`;
+            dom.preview.systemToken.textContent = `${formatNumber(systemTokens)}`;
             dom.preview.contextToken.textContent = `${formatNumber(effectiveContext)} / ${formatNumber(Math.floor(maxWindow))}`;
             dom.preview.userInputToken.textContent = formatNumber(inputTokens);
             dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
@@ -276,10 +623,19 @@
             } else {
                 dom.preview.lorebookP.classList.add('hidden');
             }
+
+            // Update monthly estimate
+            updateMonthlyEstimate(turnCostKRW);
+        }
+
+        function updateMonthlyEstimate(turnCostKRW) {
+            const dailyTurns = parseInt(dom.dailyTurns.value) || 100;
+            const monthlyCost = turnCostKRW * dailyTurns * 30;
+            dom.monthly.cost.textContent = `${formatKRW(monthlyCost)}원`;
         }
 
         function handleAddTurn() {
-            const { model, maxWindow, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
             const effectiveContext = calculateEffectiveContext(maxWindow);
             
             let lorebookTokens = 0;
@@ -291,7 +647,7 @@
                 retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
             }
             
-            const totalInputTokens = SYSTEM_PROMPT_TOKENS + effectiveContext + inputTokens + lorebookTokens;
+            const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
             
             const prices = modelPrices[model];
             const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
@@ -347,17 +703,56 @@
             previewCost();
         }
 
+        function applyScenario(scenario) {
+            currentScenario = scenario;
+            const preset = scenarioPresets[scenario];
+            
+            // Update UI elements
+            dom.inputSlider.value = preset.input;
+            dom.outputSlider.value = preset.output;
+            dom.useLorebookCheckbox.checked = preset.lorebook;
+            
+            // Update display
+            dom.inputSliderValue.textContent = formatNumber(preset.input);
+            dom.outputSliderValue.textContent = formatNumber(preset.output);
+            
+            // Update scenario card selection
+            document.querySelectorAll('.scenario-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-scenario="${scenario}"]`).classList.add('selected');
+            
+            previewCost();
+        }
+
         // --- EVENT LISTENERS ---
         dom.addTurnBtn.addEventListener('click', handleAddTurn);
         dom.resetBtn.addEventListener('click', resetConversation);
+        
+        // Scenario selection
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const scenario = card.dataset.scenario;
+                applyScenario(scenario);
+            });
+        });
         
         // Listen for changes on select boxes and checkbox
         [
             dom.modelSelect, 
             dom.contextLimitSelect, 
-            dom.useLorebookCheckbox
+            dom.useLorebookCheckbox,
+            dom.dailyTurns
         ].forEach(el => {
             el.addEventListener('change', previewCost);
+        });
+
+        // System prompt token counting
+        dom.systemPrompt.addEventListener('input', () => {
+            const model = dom.modelSelect.value;
+            const tokens = estimateTokensByModel(dom.systemPrompt.value, model);
+            dom.systemTokenCount.textContent = formatNumber(tokens);
+            previewCost();
         });
 
         // Listen for input on sliders for real-time updates
@@ -371,9 +766,19 @@
             previewCost();
         });
 
-
         // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', resetConversation);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize system prompt token count
+            const model = dom.modelSelect.value;
+            const initialTokens = estimateTokensByModel(dom.systemPrompt.value, model);
+            dom.systemTokenCount.textContent = formatNumber(initialTokens);
+            
+            // Apply default scenario
+            applyScenario('casual');
+            
+            // Initial preview
+            previewCost();
+        });
     </script>
 </body>
 </html>
