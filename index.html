@@ -438,9 +438,10 @@
 
                         <div class="text-xs text-gray-500 bg-white rounded p-3">
                             <p class="font-semibold mb-1">💡 계산 방식:</p>
-                            <p>• 사용자 수 × 1인당 일일 턴 수 × 1턴 비용 = 전체 일일 비용</p>
-                            <p>• 전체 일일 비용 × 30일 = 월간 총 비용</p>
-                            <p class="mt-2 text-gray-400">※ 실제 사용 패턴에 따라 차이가 있을 수 있습니다.</p>
+                            <p>• <strong>1턴 비용:</strong> 다음 호출 시 예상 비용 (현재 컨텍스트 기준)</p>
+                            <p>• <strong>일일 비용:</strong> 평균 턴 비용 × 일일 턴 수 (컨텍스트 누적 고려)</p>
+                            <p>• <strong>월간 비용:</strong> 일일 비용 × 사용자 수 × 30일</p>
+                            <p class="mt-2 text-gray-400">※ 컨텍스트가 누적되면서 비용이 점진적으로 증가하는 것을 반영합니다.</p>
                         </div>
                     </div>
                 </div>
@@ -693,17 +694,47 @@
             const dailyTurns = parseInt(dom.dailyTurns.value) || 100;
             const userCount = parseInt(document.getElementById('user-count').value) || 1;
             
-            const perUserDailyCost = turnCostKRW * dailyTurns;
+            // 현재 턴 비용 (다음 호출 비용)
+            dom.costBreakdown.perTurnCost.textContent = `${formatKRW(turnCostKRW)}원`;
+            
+            // 일일 비용 계산 - 평균 비용 방식 사용
+            const averageTurnCost = calculateAverageTurnCost(dailyTurns);
+            const perUserDailyCost = averageTurnCost * dailyTurns;
             const totalDailyCost = perUserDailyCost * userCount;
             const monthlyCost = totalDailyCost * 30;
             
             // 비용 분석 업데이트
-            dom.costBreakdown.perTurnCost.textContent = `${formatKRW(turnCostKRW)}원`;
             dom.costBreakdown.perUserDailyCost.textContent = `${formatKRW(perUserDailyCost)}원`;
             dom.costBreakdown.totalDailyCost.textContent = `${formatKRW(totalDailyCost)}원`;
             
             // 월간 비용 업데이트
             dom.monthly.cost.textContent = `${formatKRW(monthlyCost)}원`;
+        }
+
+        function calculateAverageTurnCost(dailyTurns) {
+            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+            const prices = modelPrices[model];
+            
+            let lorebookTokens = 0;
+            let retrievalCostKRW = 0;
+            
+            if (useLorebook) {
+                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+                retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+            }
+            
+            // 일일 턴 수에 따른 평균 컨텍스트 크기 계산
+            const averageContextPerTurn = Math.min(maxWindow / 2, (inputTokens + outputTokens) * dailyTurns / 2);
+            const averageContextTokens = Math.min(averageContextPerTurn, maxWindow);
+            
+            const totalInputTokens = systemTokens + averageContextTokens + inputTokens + lorebookTokens;
+            
+            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+            const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+            
+            return llmCostKRW + retrievalCostKRW;
         }
 
         function handleAddTurn() {
