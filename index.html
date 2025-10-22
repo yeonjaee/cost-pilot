@@ -512,6 +512,12 @@
             
             monthly: {
                 cost: document.getElementById('monthly-cost')
+            },
+            
+            costBreakdown: {
+                perTurnCost: document.getElementById('per-turn-cost'),
+                perUserDailyCost: document.getElementById('per-user-daily-cost'),
+                totalDailyCost: document.getElementById('total-daily-cost')
             }
         };
 
@@ -685,7 +691,18 @@
 
         function updateMonthlyEstimate(turnCostKRW) {
             const dailyTurns = parseInt(dom.dailyTurns.value) || 100;
-            const monthlyCost = turnCostKRW * dailyTurns * 30;
+            const userCount = parseInt(document.getElementById('user-count').value) || 1;
+            
+            const perUserDailyCost = turnCostKRW * dailyTurns;
+            const totalDailyCost = perUserDailyCost * userCount;
+            const monthlyCost = totalDailyCost * 30;
+            
+            // 비용 분석 업데이트
+            dom.costBreakdown.perTurnCost.textContent = `${formatKRW(turnCostKRW)}원`;
+            dom.costBreakdown.perUserDailyCost.textContent = `${formatKRW(perUserDailyCost)}원`;
+            dom.costBreakdown.totalDailyCost.textContent = `${formatKRW(totalDailyCost)}원`;
+            
+            // 월간 비용 업데이트
             dom.monthly.cost.textContent = `${formatKRW(monthlyCost)}원`;
         }
 
@@ -797,7 +814,8 @@
             dom.modelSelect, 
             dom.contextLimitSelect, 
             dom.useLorebookCheckbox,
-            dom.dailyTurns
+            dom.dailyTurns,
+            document.getElementById('user-count')
         ].forEach(el => {
             el.addEventListener('change', previewCost);
         });
