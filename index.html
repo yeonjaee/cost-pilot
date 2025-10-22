@@ -375,17 +375,73 @@
                 <!-- Monthly Estimate -->
                 <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 shadow-lg">
                     <h3 class="text-lg font-bold text-gray-800 mb-4">월간 비용 추정</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">일일 대화 턴 수:</span>
-                            <input type="number" id="daily-turns" value="100" min="1" max="10000" class="w-20 p-1 text-sm border rounded text-center">
+                    <div class="space-y-4">
+                        <!-- User count input -->
+                        <div>
+                            <label for="user-count" class="block text-sm font-medium text-gray-700 mb-2">
+                                총 사용자 수
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>사용자 수:</strong> 서비스를 이용할 전체 사용자 수<br>
+                                        <strong>예시:</strong> 100명의 사용자가 챗봇을 사용하는 경우
+                                    </span>
+                                </span>
+                            </label>
+                            <input type="number" id="user-count" value="1" min="1" max="1000000" 
+                                   class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">월간 예상 비용:</span>
-                            <span id="monthly-cost" class="font-bold text-purple-700 text-lg">0원</span>
+
+                        <!-- Daily turns per user -->
+                        <div>
+                            <label for="daily-turns" class="block text-sm font-medium text-gray-700 mb-2">
+                                1인당 일일 대화 턴 수
+                                <span class="info-tooltip ml-1">
+                                    <span class="text-blue-500">ℹ️</span>
+                                    <span class="tooltip-text">
+                                        <strong>대화 턴:</strong> 사용자가 메시지를 보내고 AI가 응답하는 것을 1턴으로 계산<br>
+                                        <strong>예시:</strong><br>
+                                        • 가벼운 사용: 10-30턴/일<br>
+                                        • 일반적 사용: 50-100턴/일<br>
+                                        • 적극적 사용: 200-500턴/일
+                                    </span>
+                                </span>
+                            </label>
+                            <input type="number" id="daily-turns" value="100" min="1" max="10000" 
+                                   class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
                         </div>
-                        <div class="text-xs text-gray-500 mt-2">
-                            <p>※ 실제 사용량에 따라 차이가 있을 수 있습니다.</p>
+
+                        <!-- Cost breakdown -->
+                        <div class="border-t border-purple-200 pt-4 space-y-3">
+                            <div class="bg-white rounded-lg p-3">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-xs text-gray-600">1인당 1턴 비용:</span>
+                                    <span id="per-turn-cost" class="font-semibold text-purple-700">0원</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-xs text-gray-600">1인당 일일 비용:</span>
+                                    <span id="per-user-daily-cost" class="font-semibold text-purple-700">0원</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">전체 일일 비용:</span>
+                                    <span id="total-daily-cost" class="font-semibold text-purple-800">0원</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-purple-100 rounded-lg p-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-bold text-gray-800">월간 총 비용 (30일):</span>
+                                    <span id="monthly-cost" class="font-bold text-purple-900 text-xl">0원</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-gray-500 bg-white rounded p-3">
+                            <p class="font-semibold mb-1">💡 계산 방식:</p>
+                            <p>• 1턴 비용 × 1인당 일일 턴 수 = 1인당 일일 비용</p>
+                            <p>• 1인당 일일 비용 × 사용자 수 = 전체 일일 비용</p>
+                            <p>• 전체 일일 비용 × 30일 = 월간 총 비용</p>
+                            <p class="mt-2 text-gray-400">※ 실제 사용 패턴에 따라 차이가 있을 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
