@@ -328,7 +328,7 @@
                         <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
                     </div>
                     <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
-                        <p>• 총 누적 기억 용량: <span id="summary-context-token" class="font-semibold">0</span> 토큰</p>
+                        <p>• 현재 기억 용량: <span id="summary-context-token" class="font-semibold">0 / 0</span> 토큰 (유효 / 전체)</p>
                         <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
                     </div>
                     <div class="mt-4">
@@ -696,9 +696,9 @@
                 retrievalCostPerTurn = retrievalCostUSD * USD_TO_KRW;
             }
             
-            // 실제 대화 패턴 시뮬레이션
+            // 실제 대화 패턴 시뮬레이션 - 현재 컨텍스트에서 시작
             let totalCost = 0;
-            let currentContext = 0;
+            let currentContext = calculateEffectiveContext(maxWindow); // 현재 누적된 컨텍스트에서 시작
             const turnTokenSize = inputTokens + outputTokens;
             
             for (let turn = 0; turn < dailyTurns; turn++) {
@@ -712,8 +712,14 @@
                 
                 totalCost += turnCost;
                 
-                // 컨텍스트 누적 (maxWindow를 초과하지 않도록)
-                currentContext = Math.min(currentContext + turnTokenSize, maxWindow);
+                // 컨텍스트 윈도우 관리: 새 턴 추가 후 윈도우 초과 시 제한
+                const newContext = currentContext + turnTokenSize;
+                if (newContext > maxWindow) {
+                    // 윈도우를 초과하면 최대 윈도우 크기로 제한 (오래된 대화 제거 시뮬레이션)
+                    currentContext = Math.min(maxWindow, newContext);
+                } else {
+                    currentContext = newContext;
+                }
             }
             
             // 평균 턴 비용 반환
@@ -754,8 +760,9 @@
             
             // Update Summary UI
             const totalAccumulatedContext = conversationHistory.reduce((sum, turn) => sum + turn.input + turn.output, 0);
+            const currentEffectiveContext = calculateEffectiveContext(maxWindow); // 실제 AI가 기억하는 컨텍스트
             dom.summary.totalCost.textContent = `${formatKRW(totalCostKRW)} 원`;
-            dom.summary.contextToken.textContent = formatNumber(totalAccumulatedContext);
+            dom.summary.contextToken.textContent = `${formatNumber(currentEffectiveContext)} / ${formatNumber(totalAccumulatedContext)}`;
             dom.summary.turnCount.textContent = formatNumber(conversationHistory.length);
             
             // Add to history log
@@ -774,9 +781,10 @@
             conversationHistory = [];
             totalCostKRW = 0;
             
-            // ===[ MODIFIED LINE START ]===
-            dom.contextLimitInput.value = "160000"; // 기본값 16만 토큰으로 변경
-            // ===[ MODIFIED LINE END ]===
+            // 현재 선택된 모델에 맞는 기본 컨텍스트 값 설정 (최대의 80%)
+            const currentModel = modelPrices[dom.modelSelect.value];
+            const recommendedContext = Math.floor(currentModel.context * 0.8);
+            dom.contextLimitInput.value = recommendedContext.toString();
             
             dom.useLorebookCheckbox.checked = false;
             dom.inputSlider.value = 50;
