@@ -187,21 +187,19 @@
                         </div>
 
                         <div>
-                            <label for="context-limit-select" class="block text-sm font-medium text-gray-700 mb-2">
-                                컨텍스트 사용량 제한
+                            <label for="context-limit-input" class="block text-sm font-medium text-gray-700 mb-2">
+                                컨텍스트 최대 토큰
                                 <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
-                                        <strong>컨텍스트:</strong> AI가 기억하는 대화 내용의 양<br>
-                                        <strong>높을수록:</strong> 더 긴 대화 기억, 비용 증가<br>
-                                        <strong>낮을수록:</strong> 짧은 기억, 비용 절약<br>
-                                        <strong>권장:</strong> 60-80% (품질과 비용의 균형)
+                                        <strong>컨텍스트:</strong> AI가 기억하는 대화 내용의 양 (토큰 수)<br>
+                                        <strong>최대치:</strong> 선택한 모델의 최대 컨텍스트 윈도우까지 설정할 수 있습니다. (예: 200K, 1M)<br>
+                                        <strong>권장:</strong> 모델 최대치의 80% 정도 (예: 200K 모델 -> 160,000)
                                     </span>
                                 </span>
                             </label>
                             <div class="relative">
-                                <input type="number" id="context-limit-select" value="80" min="1" max="100" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style pr-10 text-center font-semibold">
-                                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-500 font-medium">%</span>
+                                <input type="number" id="context-limit-input" value="160000" min="1" max="200000" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style text-center font-semibold">
                             </div>
                         </div>
                         </div>
@@ -447,7 +445,8 @@
         // --- DOM ELEMENTS ---
         const dom = {
             modelSelect: document.getElementById('model-select'),
-            contextLimitSelect: document.getElementById('context-limit-select'),
+            // ===[ MODIFIED LINE ]===
+            contextLimitInput: document.getElementById('context-limit-input'), 
             systemPrompt: document.getElementById('system-prompt'),
             systemTokenCount: document.getElementById('system-token-count'),
             inputSlider: document.getElementById('input-slider'),
@@ -590,12 +589,10 @@
             const model = dom.modelSelect.value;
             const modelInfo = modelPrices[model];
             
-            // ===[ MODIFIED LINE START ]===
-            // input에서 % 값을 읽어와 0.0~1.0 사이의 float으로 변환 (기본값 80%)
-            const contextLimit = (parseFloat(dom.contextLimitSelect.value) || 80) / 100;
-            // ===[ MODIFIED LINE END ]===
-            
-            const maxWindow = modelInfo.context * contextLimit;
+            // ===[ MODIFIED BLOCK START ]===
+            // input에서 최대 토큰 값을 직접 읽어옵니다. (기본값 160,000)
+            const maxWindow = (parseFloat(dom.contextLimitInput.value) || 160000);
+            // ===[ MODIFIED BLOCK END ]===
             
             // 기본 1500 토큰 + 사용자 입력 시스템 프롬프트 토큰
             const userSystemTokens = estimateTokensByModel(dom.systemPrompt.value, model);
@@ -603,7 +600,7 @@
             
             return {
                 model: model,
-                maxWindow: maxWindow,
+                maxWindow: maxWindow, // 사용자가 직접 입력한 최대 컨텍스트
                 systemTokens: systemTokens,
                 userSystemTokens: userSystemTokens, // 디스플레이용
                 inputTokens: parseInt(dom.inputSlider.value, 10),
@@ -778,7 +775,7 @@
             totalCostKRW = 0;
             
             // ===[ MODIFIED LINE START ]===
-            dom.contextLimitSelect.value = "80"; // 기본값 80%로 변경
+            dom.contextLimitInput.value = "160000"; // 기본값 16만 토큰으로 변경
             // ===[ MODIFIED LINE END ]===
             
             dom.useLorebookCheckbox.checked = false;
@@ -830,9 +827,25 @@
         });
         
         // ===[ MODIFIED BLOCK START ]===
-        // Listen for changes on select boxes and checkbox
+        
+        // 모델 변경 시: context input의 max 값을 업데이트하고, 필요시 현재 값 조정
+        dom.modelSelect.addEventListener('change', () => {
+            const selectedModel = modelPrices[dom.modelSelect.value];
+            const newMax = selectedModel.context;
+            
+            // Update the max attribute of the context limit input
+            dom.contextLimitInput.max = newMax;
+            
+            // Optional: If current value exceeds new max, clamp it
+            if (parseFloat(dom.contextLimitInput.value) > newMax) {
+                dom.contextLimitInput.value = newMax;
+            }
+            
+            previewCost(); // Recalculate
+        });
+        
+        // Listen for changes on checkbox
         [
-            dom.modelSelect, 
             dom.useLorebookCheckbox,
         ].forEach(el => {
             el.addEventListener('change', previewCost);
@@ -840,7 +853,7 @@
 
         // Listen for input on number fields for real-time updates
         [
-            dom.contextLimitSelect, 
+            dom.contextLimitInput, 
             dom.dailyTurns,
             document.getElementById('user-count')
         ].forEach(el => {
@@ -870,6 +883,12 @@
 
         // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
+            // ===[ NEW BLOCK START ]===
+            // Set initial max for context limit based on default model
+            const initialModel = modelPrices[dom.modelSelect.value];
+            dom.contextLimitInput.max = initialModel.context;
+            // ===[ NEW BLOCK END ]===
+
             // Initialize system prompt token count
             const model = dom.modelSelect.value;
             const userTokens = estimateTokensByModel(dom.systemPrompt.value, model);
