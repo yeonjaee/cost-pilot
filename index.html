@@ -610,6 +610,8 @@
         }
 
         function calculateEffectiveContext(maxWindow) {
+            // 실제 AI가 기억하는 대화 컨텍스트만 계산
+            // 시스템 프롬프트는 포함하지 않음 (컨텍스트 = 대화 내용만)
             let effectiveContext = 0;
             for (let i = conversationHistory.length - 1; i >= 0; i--) {
                 const turnTokens = conversationHistory[i].input + conversationHistory[i].output;
@@ -634,6 +636,8 @@
                 retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
             }
 
+            // totalInputTokens = 시스템 프롬프트 + 과거 대화 컨텍스트 + 현재 사용자 입력 + 로어북
+            // 시스템 프롬프트는 매 호출마다 입력으로 포함되지만, 컨텍스트에는 저장되지 않음
             const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
 
             const prices = modelPrices[model];
@@ -698,11 +702,14 @@
             
             // 실제 대화 패턴 시뮬레이션 - 현재 컨텍스트에서 시작
             let totalCost = 0;
-            let currentContext = calculateEffectiveContext(maxWindow); // 현재 누적된 컨텍스트에서 시작
+            // currentContext는 대화 내용만 저장 (시스템 프롬프트는 매번 따로 추가됨)
+            let currentContext = calculateEffectiveContext(maxWindow);
             const turnTokenSize = inputTokens + outputTokens;
             
             for (let turn = 0; turn < dailyTurns; turn++) {
                 // 각 턴마다 입력 토큰 계산
+                // 시스템 프롬프트(systemTokens)는 매 턴마다 입력으로 사용되지만
+                // 컨텍스트에는 저장되지 않음 (컨텍스트 = 대화 내용만)
                 const totalInputTokens = systemTokens + currentContext + inputTokens + lorebookTokens;
                 
                 // 비용 계산
