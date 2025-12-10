@@ -98,98 +98,100 @@
             background-color: #eff6ff;
         }
         /* Hide number input arrows */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-          -webkit-appearance: none; 
-          margin: 0; 
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         input[type=number] {
-          -moz-appearance: textfield;
+            -moz-appearance: textfield;
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen p-4">
-    <div class="w-full max-w-6xl mx-auto">
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-2">LLM AI 비용 계산기</h1>
-            <p class="text-gray-600 text-lg">캐릭터 챗봇 운영 비용을 정확하게 예측하고 최적화하세요</p>
-        </div>
+<div class="w-full max-w-6xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">LLM AI 비용 계산기</h1>
+        <p class="text-gray-600 text-lg">캐릭터 챗봇 운영 비용을 정확하게 예측하고 최적화하세요</p>
+    </div>
 
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">1. 사용 시나리오 선택</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="casual">
-                            <h3 class="font-bold text-gray-800 mb-2">💬 일반 대화</h3>
-                            <p class="text-sm text-gray-600 mb-2">일상적인 대화와 질문응답</p>
-                            <div class="text-xs text-gray-500">
-                                <p>• 입력: 20-50 토큰</p>
-                                <p>• 출력: 100-300 토큰</p>
-                                <p>• 로어북: 사용 안함</p>
-                            </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">1. 사용 시나리오 선택</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="casual">
+                        <h3 class="font-bold text-gray-800 mb-2">💬 일반 대화</h3>
+                        <p class="text-sm text-gray-600 mb-2">일상적인 대화와 질문응답</p>
+                        <div class="text-xs text-gray-500">
+                            <p>• 입력: 20-50 토큰</p>
+                            <p>• 출력: 100-300 토큰</p>
+                            <p>• 로어북: 사용 안함</p>
                         </div>
-                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="story">
-                            <h3 class="font-bold text-gray-800 mb-2">📚 스토리텔링</h3>
-                            <p class="text-sm text-gray-600 mb-2">긴 이야기 생성과 역할극</p>
-                            <div class="text-xs text-gray-500">
-                                <p>• 입력: 50-150 토큰</p>
-                                <p>• 출력: 300-800 토큰</p>
-                                <p>• 로어북: 가끔 사용</p>
-                            </div>
+                    </div>
+                    <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="story">
+                        <h3 class="font-bold text-gray-800 mb-2">📚 스토리텔링</h3>
+                        <p class="text-sm text-gray-600 mb-2">긴 이야기 생성과 역할극</p>
+                        <div class="text-xs text-gray-500">
+                            <p>• 입력: 50-150 토큰</p>
+                            <p>• 출력: 300-800 토큰</p>
+                            <p>• 로어북: 가끔 사용</p>
                         </div>
-                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="roleplay">
-                            <h3 class="font-bold text-gray-800 mb-2">🎭 역할극</h3>
-                            <p class="text-sm text-gray-600 mb-2">캐릭터 역할극과 상세한 상호작용</p>
-                            <div class="text-xs text-gray-500">
-                                <p>• 입력: 100-200 토큰</p>
-                                <p>• 출력: 200-500 토큰</p>
-                                <p>• 로어북: 자주 사용</p>
-                            </div>
+                    </div>
+                    <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="roleplay">
+                        <h3 class="font-bold text-gray-800 mb-2">🎭 역할극</h3>
+                        <p class="text-sm text-gray-600 mb-2">캐릭터 역할극과 상세한 상호작용</p>
+                        <div class="text-xs text-gray-500">
+                            <p>• 입력: 100-200 토큰</p>
+                            <p>• 출력: 200-500 토큰</p>
+                            <p>• 로어북: 자주 사용</p>
                         </div>
-                        <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="custom">
-                            <h3 class="font-bold text-gray-800 mb-2">⚙️ 사용자 정의</h3>
-                            <p class="text-sm text-gray-600 mb-2">직접 설정하여 정확한 계산</p>
-                            <div class="text-xs text-gray-500">
-                                <p>• 입력: 직접 설정</p>
-                                <p>• 출력: 직접 설정</p>
-                                <p>• 로어북: 선택 가능</p>
-                            </div>
+                    </div>
+                    <div class="scenario-card p-4 border-2 border-gray-200 rounded-lg" data-scenario="custom">
+                        <h3 class="font-bold text-gray-800 mb-2">⚙️ 사용자 정의</h3>
+                        <p class="text-sm text-gray-600 mb-2">직접 설정하여 정확한 계산</p>
+                        <div class="text-xs text-gray-500">
+                            <p>• 입력: 직접 설정</p>
+                            <p>• 출력: 직접 설정</p>
+                            <p>• 로어북: 선택 가능</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">2. 모델 및 설정</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">
-                                AI 모델 선택
-                                <span class="info-tooltip ml-1">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">2. 모델 및 설정</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="model-select" class="block text-sm font-medium text-gray-700 mb-2">
+                            AI 모델 선택
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>Claude Sonnet 4.5:</strong> 가장 고품질, 비용 높음<br>
+                                        <strong>Gemini 3.0 Pro:</strong> 차세대 고성능 모델<br>
                                         <strong>Gemini 2.5 Pro:</strong> 균형잡힌 성능과 비용<br>
                                         <strong>Gemini 2.5 Flash:</strong> 빠르고 저렴<br>
                                         <strong>Grok 4 Fast:</strong> 매우 저렴, 최신 모델<br>
                                         <strong>Gemini Flash Lite:</strong> 가장 저렴
                                     </span>
                                 </span>
-                            </label>
-                            <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
-                                <option value="claude-4.5-sonnet">Claude Sonnet 4.5 (200K)</option>
-                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (1M)</option>
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (1M)</option>
-                                <option value="grok-4-fast">Grok 4 Fast (2M)</option>
-                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (1M)</option>
-                            </select>
-                        </div>
+                        </label>
+                        <select id="model-select" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style">
+                            <option value="claude-4.5-sonnet">Claude Sonnet 4.5 (200K)</option>
+                            <option value="gemini-3.0-pro">Gemini 3.0 Pro (1M)</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro (1M)</option>
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (1M)</option>
+                            <option value="grok-4-fast">Grok 4 Fast (2M)</option>
+                            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (1M)</option>
+                        </select>
+                    </div>
 
-                        <div>
-                            <label for="context-limit-input" class="block text-sm font-medium text-gray-700 mb-2">
-                                컨텍스트 최대 토큰
-                                <span class="info-tooltip ml-1">
+                    <div>
+                        <label for="context-limit-input" class="block text-sm font-medium text-gray-700 mb-2">
+                            컨텍스트 최대 토큰
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>컨텍스트:</strong> AI가 기억하는 대화 내용의 양 (토큰 수)<br>
@@ -197,20 +199,20 @@
                                         <strong>권장:</strong> 모델 최대치의 80% 정도 (예: 200K 모델 -> 160,000)
                                     </span>
                                 </span>
-                            </label>
-                            <div class="relative">
-                                <input type="number" id="context-limit-input" value="160000" min="1" max="200000" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style text-center font-semibold">
-                            </div>
+                        </label>
+                        <div class="relative">
+                            <input type="number" id="context-limit-input" value="160000" min="1" max="200000" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style text-center font-semibold">
                         </div>
-                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">3. 시스템 프롬프트 설정</h2>
-                    <div>
-                        <label for="system-prompt" class="block text-sm font-medium text-gray-700 mb-2">
-                            추가 시스템 프롬프트 (선택 사항)
-                            <span class="info-tooltip ml-1">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">3. 시스템 프롬프트 설정</h2>
+                <div>
+                    <label for="system-prompt" class="block text-sm font-medium text-gray-700 mb-2">
+                        추가 시스템 프롬프트 (선택 사항)
+                        <span class="info-tooltip ml-1">
                                 <span class="text-blue-500">ℹ️</span>
                                 <span class="tooltip-text">
                                     <strong>기본 시스템 토큰:</strong> 1,500 토큰 (캐릭터 정의, 시스템 설정 등)<br>
@@ -219,13 +221,13 @@
                                     <strong>예시:</strong> "사용자의 감정 상태를 세심하게 파악하고 공감하세요."
                                 </span>
                             </span>
-                        </label>
-                        <textarea id="system-prompt" rows="4" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style" placeholder="추가 시스템 프롬프트가 있다면 여기에 입력하세요. (선택 사항)"></textarea>
-                        <div class="mt-2 text-sm text-gray-600">
-                            <span>실제 토큰 수: </span>
-                            <span id="system-token-count" class="font-bold text-blue-600">0</span>
-                            <span> 토큰</span>
-                            <span class="info-tooltip ml-1">
+                    </label>
+                    <textarea id="system-prompt" rows="4" class="w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus-style" placeholder="추가 시스템 프롬프트가 있다면 여기에 입력하세요. (선택 사항)"></textarea>
+                    <div class="mt-2 text-sm text-gray-600">
+                        <span>실제 토큰 수: </span>
+                        <span id="system-token-count" class="font-bold text-blue-600">0</span>
+                        <span> 토큰</span>
+                        <span class="info-tooltip ml-1">
                                 <span class="text-blue-500">ℹ️</span>
                                 <span class="tooltip-text">
                                     <strong>토큰 계산 방식:</strong><br>
@@ -235,18 +237,18 @@
                                     <strong>참고:</strong> tiktoken이 로드되지 않으면 근사치를 사용합니다.
                                 </span>
                             </span>
-                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-800 mb-4">4. 토큰 설정</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="input-slider" class="block text-sm font-medium text-gray-700 mb-2">
-                                예상 입력 길이 (토큰): 
-                                <span id="input-slider-value" class="font-bold text-blue-600">50</span>
-                                <span class="info-tooltip ml-1">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">4. 토큰 설정</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="input-slider" class="block text-sm font-medium text-gray-700 mb-2">
+                            예상 입력 길이 (토큰):
+                            <span id="input-slider-value" class="font-bold text-blue-600">50</span>
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>입력 토큰:</strong> 사용자가 보내는 메시지의 길이<br>
@@ -256,15 +258,15 @@
                                         • "좀 더 자세히 설명해줘" = 약 10 토큰
                                     </span>
                                 </span>
-                            </label>
-                            <input type="range" id="input-slider" min="0" max="5000" value="50" step="50" class="w-full">
-                        </div>
+                        </label>
+                        <input type="range" id="input-slider" min="0" max="5000" value="50" step="50" class="w-full">
+                    </div>
 
-                        <div>
-                            <label for="output-slider" class="block text-sm font-medium text-gray-700 mb-2">
-                                예상 출력 길이 (토큰): 
-                                <span id="output-slider-value" class="font-bold text-blue-600">800</span>
-                                <span class="info-tooltip ml-1">
+                    <div>
+                        <label for="output-slider" class="block text-sm font-medium text-gray-700 mb-2">
+                            예상 출력 길이 (토큰):
+                            <span id="output-slider-value" class="font-bold text-blue-600">800</span>
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>출력 토큰:</strong> AI가 생성하는 응답의 길이<br>
@@ -274,15 +276,15 @@
                                         • 긴 스토리 = 500-2000 토큰
                                     </span>
                                 </span>
-                            </label>
-                            <input type="range" id="output-slider" min="0" max="5000" value="800" step="50" class="w-full">
-                        </div>
+                        </label>
+                        <input type="range" id="output-slider" min="0" max="5000" value="800" step="50" class="w-full">
                     </div>
-                    
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            로어북 (벡터 검색) 사용
-                            <span class="info-tooltip ml-1">
+                </div>
+
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        로어북 (벡터 검색) 사용
+                        <span class="info-tooltip ml-1">
                                 <span class="text-blue-500">ℹ️</span>
                                 <span class="tooltip-text">
                                     <strong>로어북:</strong> AI가 참조할 수 있는 추가 문서나 정보<br>
@@ -290,77 +292,77 @@
                                     <strong>비용:</strong> 문서 검색을 위한 추가 비용이 발생합니다
                                 </span>
                             </span>
-                        </label>
-                        <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
-                            <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
-                            <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="flex space-x-4">
-                    <button id="add-turn-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
-                    <button id="reset-btn" class="flex-1 py-3 px-4 bg-gray-600 text-white font-bold rounded-lg btn shadow-md">대화 초기화</button>
+                    </label>
+                    <label class="flex items-center p-3 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100">
+                        <input type="checkbox" id="use-lorebook" class="h-5 w-5 text-blue-600 rounded focus:ring-blue-500">
+                        <span class="ml-3 text-sm text-gray-800">문서(500토큰) 검색 비용 추가</span>
+                    </label>
                 </div>
             </div>
 
-            <div class="space-y-6">
-                <div class="p-6 bg-green-50 rounded-xl border border-green-200 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">다음 호출 비용 예측</h3>
-                    <div class="flex justify-between items-center mb-4">
-                        <p class="text-md font-semibold text-gray-700">예상 비용</p>
-                        <p id="preview-cost" class="text-2xl font-bold text-green-700">0.00 원</p>
-                    </div>
-                    <div class="text-sm text-gray-600 space-y-1 border-t border-green-200 pt-3">
-                        <p>• 시스템 프롬프트: <span id="preview-system-token" class="font-semibold"></span></p>
-                        <p>• 적용 컨텍스트 (기억 용량): <span id="preview-context-token" class="font-semibold"></span></p>
-                        <p id="preview-lorebook-p" class="hidden text-purple-700">• 로어북 문서 (벡터 검색): <span id="preview-lorebook-token" class="font-semibold"></span></p>
-                        <p>• 사용자 입력: <span id="preview-user-input-token" class="font-semibold"></span></p>
-                        <p class="font-bold text-blue-700 mt-1">→ 총 입력 (Input): <span id="preview-total-input-token"></span></p>
-                        <p class="font-bold text-green-800">→ 총 출력 (Output): <span id="preview-output-token"></span></p>
+            <div class="flex space-x-4">
+                <button id="add-turn-btn" class="flex-1 py-3 px-4 bg-blue-600 text-white font-bold rounded-lg btn shadow-md">대화 턴 추가</button>
+                <button id="reset-btn" class="flex-1 py-3 px-4 bg-gray-600 text-white font-bold rounded-lg btn shadow-md">대화 초기화</button>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="p-6 bg-green-50 rounded-xl border border-green-200 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">다음 호출 비용 예측</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-md font-semibold text-gray-700">예상 비용</p>
+                    <p id="preview-cost" class="text-2xl font-bold text-green-700">0.00 원</p>
+                </div>
+                <div class="text-sm text-gray-600 space-y-1 border-t border-green-200 pt-3">
+                    <p>• 시스템 프롬프트: <span id="preview-system-token" class="font-semibold"></span></p>
+                    <p>• 적용 컨텍스트 (기억 용량): <span id="preview-context-token" class="font-semibold"></span></p>
+                    <p id="preview-lorebook-p" class="hidden text-purple-700">• 로어북 문서 (벡터 검색): <span id="preview-lorebook-token" class="font-semibold"></span></p>
+                    <p>• 사용자 입력: <span id="preview-user-input-token" class="font-semibold"></span></p>
+                    <p class="font-bold text-blue-700 mt-1">→ 총 입력 (Input): <span id="preview-total-input-token"></span></p>
+                    <p class="font-bold text-green-800">→ 총 출력 (Output): <span id="preview-output-token"></span></p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">대화 요약</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
+                    <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
+                </div>
+                <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
+                    <p>• 현재 기억 용량: <span id="summary-context-token" class="font-semibold">0 / 0</span> 토큰 (유효 / 전체)</p>
+                    <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
+                    <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
+                        <p>아직 대화 기록이 없습니다.</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="p-6 bg-blue-50 rounded-xl border border-blue-200 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">대화 요약</h3>
-                    <div class="flex justify-between items-center mb-4">
-                        <p class="text-md font-semibold text-gray-700">총 누적 비용</p>
-                        <p id="summary-total-cost" class="text-2xl font-bold text-blue-800">0.00 원</p>
-                    </div>
-                    <div class="text-sm text-gray-600 space-y-1 border-t border-blue-200 pt-3">
-                        <p>• 현재 기억 용량: <span id="summary-context-token" class="font-semibold">0 / 0</span> 토큰 (유효 / 전체)</p>
-                        <p>• 총 대화 턴 수: <span id="summary-turn-count" class="font-semibold">0</span> 회</p>
-                    </div>
-                    <div class="mt-4">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">대화 기록</label>
-                        <div id="history-log" class="h-20 p-2 bg-white border rounded-md overflow-y-auto text-xs text-gray-500">
-                            <p>아직 대화 기록이 없습니다.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 shadow-lg">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">월간 비용 추정</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="user-count" class="block text-sm font-medium text-gray-700 mb-2">
-                                총 사용자 수
-                                <span class="info-tooltip ml-1">
+            <div class="p-6 bg-purple-50 rounded-xl border border-purple-200 shadow-lg">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">월간 비용 추정</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="user-count" class="block text-sm font-medium text-gray-700 mb-2">
+                            총 사용자 수
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>사용자 수:</strong> 서비스를 이용할 전체 사용자 수<br>
                                         <strong>예시:</strong> 100명의 사용자가 챗봇을 사용하는 경우
                                     </span>
                                 </span>
-                            </label>
-                            <input type="number" id="user-count" value="1" min="1" max="1000000" 
-                                   class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
-                        </div>
+                        </label>
+                        <input type="number" id="user-count" value="1" min="1" max="1000000"
+                               class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
+                    </div>
 
-                        <div>
-                            <label for="daily-turns" class="block text-sm font-medium text-gray-700 mb-2">
-                                1인당 일일 대화 턴 수
-                                <span class="info-tooltip ml-1">
+                    <div>
+                        <label for="daily-turns" class="block text-sm font-medium text-gray-700 mb-2">
+                            1인당 일일 대화 턴 수
+                            <span class="info-tooltip ml-1">
                                     <span class="text-blue-500">ℹ️</span>
                                     <span class="tooltip-text">
                                         <strong>대화 턴:</strong> 사용자가 메시지를 보내고 AI가 응답하는 것을 1턴으로 계산<br>
@@ -370,552 +372,553 @@
                                         • 적극적 사용: 200-500턴/일
                                     </span>
                                 </span>
-                            </label>
-                            <input type="number" id="daily-turns" value="100" min="1" max="10000" 
-                                   class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
-                        </div>
+                        </label>
+                        <input type="number" id="daily-turns" value="100" min="1" max="10000"
+                               class="w-full p-2 text-sm border border-gray-300 rounded-lg focus-style text-center font-semibold">
+                    </div>
 
-                        <div class="border-t border-purple-200 pt-4 space-y-3">
-                            <div class="bg-white rounded-lg p-3">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs text-gray-600">1인당 1턴 비용:</span>
-                                    <span id="per-turn-cost" class="font-semibold text-purple-700">0원</span>
-                                </div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs text-gray-600">1인당 일일 비용:</span>
-                                    <span id="per-user-daily-cost" class="font-semibold text-purple-700">0원</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-xs text-gray-600">전체 일일 비용:</span>
-                                    <span id="total-daily-cost" class="font-semibold text-purple-800">0원</span>
-                                </div>
+                    <div class="border-t border-purple-200 pt-4 space-y-3">
+                        <div class="bg-white rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-gray-600">1인당 1턴 비용:</span>
+                                <span id="per-turn-cost" class="font-semibold text-purple-700">0원</span>
                             </div>
-
-                            <div class="bg-purple-100 rounded-lg p-4">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-bold text-gray-800">월간 총 비용 (30일):</span>
-                                    <span id="monthly-cost" class="font-bold text-purple-900 text-xl">0원</span>
-                                </div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs text-gray-600">1인당 일일 비용:</span>
+                                <span id="per-user-daily-cost" class="font-semibold text-purple-700">0원</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-600">전체 일일 비용:</span>
+                                <span id="total-daily-cost" class="font-semibold text-purple-800">0원</span>
                             </div>
                         </div>
 
-                        <div class="text-xs text-gray-500 bg-white rounded p-3">
-                            <p class="font-semibold mb-1">💡 계산 방식:</p>
-                            <p>• <strong>1턴 비용:</strong> 다음 호출 시 예상 비용 (현재 컨텍스트 기준)</p>
-                            <p>• <strong>일일 비용:</strong> 평균 턴 비용 × 일일 턴 수 (컨텍스트 누적 고려)</p>
-                            <p>• <strong>월간 비용:</strong> 일일 비용 × 사용자 수 × 30일</p>
-                            <p class="mt-2 text-gray-400">※ 컨텍스트가 누적되면서 비용이 점진적으로 증가하는 것을 반영합니다.</p>
+                        <div class="bg-purple-100 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-gray-800">월간 총 비용 (30일):</span>
+                                <span id="monthly-cost" class="font-bold text-purple-900 text-xl">0원</span>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="text-xs text-gray-500 bg-white rounded p-3">
+                        <p class="font-semibold mb-1">💡 계산 방식:</p>
+                        <p>• <strong>1턴 비용:</strong> 다음 호출 시 예상 비용 (현재 컨텍스트 기준)</p>
+                        <p>• <strong>일일 비용:</strong> 평균 턴 비용 × 일일 턴 수 (컨텍스트 누적 고려)</p>
+                        <p>• <strong>월간 비용:</strong> 일일 비용 × 사용자 수 × 30일</p>
+                        <p class="mt-2 text-gray-400">※ 컨텍스트가 누적되면서 비용이 점진적으로 증가하는 것을 반영합니다.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // --- CONFIGURATION ---
-        const modelPrices = {
-            'claude-4.5-sonnet':     { input: 3.00,  output: 15.00, context: 200000 },
-            'gemini-2.5-pro':        { input: 1.25,  output: 10.00, context: 1048576 },
-            'gemini-2.5-flash':      { input: 0.30,  output: 2.50,  context: 1000000 },
-            'grok-4-fast':           { input: 0.20,  output: 0.50,  context: 2000000 },
-            'gemini-2.5-flash-lite': { input: 0.10,  output: 0.40,  context: 1048576 }
-        };
-        const retrievalPrices = {
-            'embedding': { cost: 0.10 },
-            'ranking': { cost: 0.0 } 
-        };
-        const USD_TO_KRW = 1392;
-        const LOREBOOK_DOCUMENT_TOKENS = 500;
-        const BASE_SYSTEM_TOKENS = 1500; // 기본 시스템 토큰 (캐릭터 정의, 시스템 설정 등)
+<script>
+    // --- CONFIGURATION ---
+    const modelPrices = {
+        'claude-4.5-sonnet':     { input: 3.00,  output: 15.00, context: 200000 },
+        'gemini-3.0-pro':        { input: 2.00,  output: 12.00, context: 1048576 },
+        'gemini-2.5-pro':        { input: 1.25,  output: 10.00, context: 1048576 },
+        'gemini-2.5-flash':      { input: 0.30,  output: 2.50,  context: 1048576 },
+        'grok-4-fast':           { input: 0.20,  output: 0.50,  context: 2000000 },
+        'gemini-2.5-flash-lite': { input: 0.10,  output: 0.40,  context: 1048576 }
+    };
+    const retrievalPrices = {
+        'embedding': { cost: 0.10 },
+        'ranking': { cost: 0.0 }
+    };
+    const USD_TO_KRW = 1470;
+    const LOREBOOK_DOCUMENT_TOKENS = 500;
+    const BASE_SYSTEM_TOKENS = 1500; // 기본 시스템 토큰 (캐릭터 정의, 시스템 설정 등)
 
-        // Scenario presets
-        const scenarioPresets = {
-            'casual': { input: 30, output: 200, lorebook: false },
-            'story': { input: 100, output: 600, lorebook: true },
-            'roleplay': { input: 150, output: 400, lorebook: true },
-            'custom': { input: 50, output: 800, lorebook: false }
-        };
+    // Scenario presets
+    const scenarioPresets = {
+        'casual': { input: 30, output: 200, lorebook: false },
+        'story': { input: 100, output: 600, lorebook: true },
+        'roleplay': { input: 150, output: 400, lorebook: true },
+        'custom': { input: 50, output: 800, lorebook: false }
+    };
 
-        // --- STATE ---
-        let conversationHistory = [];
-        let totalCostKRW = 0;
-        let currentScenario = 'casual';
+    // --- STATE ---
+    let conversationHistory = [];
+    let totalCostKRW = 0;
+    let currentScenario = 'casual';
 
-        // --- DOM ELEMENTS ---
-        const dom = {
-            modelSelect: document.getElementById('model-select'),
-            // ===[ MODIFIED LINE ]===
-            contextLimitInput: document.getElementById('context-limit-input'), 
-            systemPrompt: document.getElementById('system-prompt'),
-            systemTokenCount: document.getElementById('system-token-count'),
-            inputSlider: document.getElementById('input-slider'),
-            inputSliderValue: document.getElementById('input-slider-value'),
-            outputSlider: document.getElementById('output-slider'),
-            outputSliderValue: document.getElementById('output-slider-value'),
-            useLorebookCheckbox: document.getElementById('use-lorebook'),
-            addTurnBtn: document.getElementById('add-turn-btn'),
-            resetBtn: document.getElementById('reset-btn'),
-            dailyTurns: document.getElementById('daily-turns'),
-            
-            preview: {
-                cost: document.getElementById('preview-cost'),
-                systemToken: document.getElementById('preview-system-token'),
-                contextToken: document.getElementById('preview-context-token'),
-                lorebookP: document.getElementById('preview-lorebook-p'),
-                lorebookToken: document.getElementById('preview-lorebook-token'),
-                userInputToken: document.getElementById('preview-user-input-token'),
-                totalInputToken: document.getElementById('preview-total-input-token'),
-                outputToken: document.getElementById('preview-output-token'),
-            },
-            
-            summary: {
-                totalCost: document.getElementById('summary-total-cost'),
-                contextToken: document.getElementById('summary-context-token'),
-                turnCount: document.getElementById('summary-turn-count'),
-                historyLog: document.getElementById('history-log'),
-            },
-            
-            monthly: {
-                cost: document.getElementById('monthly-cost')
-            },
-            
-            costBreakdown: {
-                perTurnCost: document.getElementById('per-turn-cost'),
-                perUserDailyCost: document.getElementById('per-user-daily-cost'),
-                totalDailyCost: document.getElementById('total-daily-cost')
+    // --- DOM ELEMENTS ---
+    const dom = {
+        modelSelect: document.getElementById('model-select'),
+        // ===[ MODIFIED LINE ]===
+        contextLimitInput: document.getElementById('context-limit-input'),
+        systemPrompt: document.getElementById('system-prompt'),
+        systemTokenCount: document.getElementById('system-token-count'),
+        inputSlider: document.getElementById('input-slider'),
+        inputSliderValue: document.getElementById('input-slider-value'),
+        outputSlider: document.getElementById('output-slider'),
+        outputSliderValue: document.getElementById('output-slider-value'),
+        useLorebookCheckbox: document.getElementById('use-lorebook'),
+        addTurnBtn: document.getElementById('add-turn-btn'),
+        resetBtn: document.getElementById('reset-btn'),
+        dailyTurns: document.getElementById('daily-turns'),
+
+        preview: {
+            cost: document.getElementById('preview-cost'),
+            systemToken: document.getElementById('preview-system-token'),
+            contextToken: document.getElementById('preview-context-token'),
+            lorebookP: document.getElementById('preview-lorebook-p'),
+            lorebookToken: document.getElementById('preview-lorebook-token'),
+            userInputToken: document.getElementById('preview-user-input-token'),
+            totalInputToken: document.getElementById('preview-total-input-token'),
+            outputToken: document.getElementById('preview-output-token'),
+        },
+
+        summary: {
+            totalCost: document.getElementById('summary-total-cost'),
+            contextToken: document.getElementById('summary-context-token'),
+            turnCount: document.getElementById('summary-turn-count'),
+            historyLog: document.getElementById('history-log'),
+        },
+
+        monthly: {
+            cost: document.getElementById('monthly-cost')
+        },
+
+        costBreakdown: {
+            perTurnCost: document.getElementById('per-turn-cost'),
+            perUserDailyCost: document.getElementById('per-user-daily-cost'),
+            totalDailyCost: document.getElementById('total-daily-cost')
+        }
+    };
+
+    // --- UTILITY FUNCTIONS ---
+    const formatNumber = (num) => num.toLocaleString('ko-KR');
+    const formatKRW = (num) => num.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // Token estimation with multiple methods
+    function estimateTokens(text) {
+        if (!text) return 0;
+
+        // Try to use tiktoken if available
+        if (typeof tiktoken !== 'undefined') {
+            try {
+                const encoding = tiktoken.get_encoding("cl100k_base");
+                return encoding.encode(text).length;
+            } catch (e) {
+                console.log("tiktoken not available, using fallback");
             }
-        };
+        }
 
-        // --- UTILITY FUNCTIONS ---
-        const formatNumber = (num) => num.toLocaleString('ko-KR');
-        const formatKRW = (num) => num.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        // Fallback: Multiple estimation methods
+        const koreanChars = (text.match(/[가-힣]/g) || []).length;
+        const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
+        const otherChars = text.length - koreanChars - (text.match(/[a-zA-Z]+/g) || []).join('').length;
+        const simpleEstimate = Math.ceil(koreanChars + (englishWords * 1.3) + (otherChars * 0.5));
 
-        // Token estimation with multiple methods
-        function estimateTokens(text) {
-            if (!text) return 0;
-            
-            // Try to use tiktoken if available
+        const charBasedEstimate = Math.ceil(text.length * 0.75);
+        const words = text.split(/\s+/).filter(word => word.length > 0);
+        const wordBasedEstimate = Math.ceil(words.length * 1.3);
+
+        return Math.max(simpleEstimate, charBasedEstimate, wordBasedEstimate);
+    }
+
+    // Model-specific token counting
+    function estimateTokensByModel(text, model) {
+        if (!text) return 0;
+
+        // Try tiktoken for OpenAI models
+        if (model.includes('gpt') || model.includes('claude')) {
             if (typeof tiktoken !== 'undefined') {
                 try {
                     const encoding = tiktoken.get_encoding("cl100k_base");
                     return encoding.encode(text).length;
                 } catch (e) {
-                    console.log("tiktoken not available, using fallback");
+                    console.log("tiktoken failed, using fallback");
                 }
             }
-            
-            // Fallback: Multiple estimation methods
-            const koreanChars = (text.match(/[가-힣]/g) || []).length;
-            const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
-            const otherChars = text.length - koreanChars - (text.match(/[a-zA-Z]+/g) || []).join('').length;
-            const simpleEstimate = Math.ceil(koreanChars + (englishWords * 1.3) + (otherChars * 0.5));
-            
-            const charBasedEstimate = Math.ceil(text.length * 0.75);
-            const words = text.split(/\s+/).filter(word => word.length > 0);
-            const wordBasedEstimate = Math.ceil(words.length * 1.3);
-            
-            return Math.max(simpleEstimate, charBasedEstimate, wordBasedEstimate);
         }
 
-        // Model-specific token counting
-        function estimateTokensByModel(text, model) {
-            if (!text) return 0;
-            
-            // Try tiktoken for OpenAI models
-            if (model.includes('gpt') || model.includes('claude')) {
-                if (typeof tiktoken !== 'undefined') {
-                    try {
-                        const encoding = tiktoken.get_encoding("cl100k_base");
-                        return encoding.encode(text).length;
-                    } catch (e) {
-                        console.log("tiktoken failed, using fallback");
-                    }
+        // Fallback to general estimation
+        return estimateTokens(text);
+    }
+
+    // More accurate token counting using tiktoken-like approach
+    function estimateTokensAdvanced(text) {
+        if (!text) return 0;
+
+        // This is a simplified version of how tiktoken works
+        let tokens = 0;
+        let i = 0;
+
+        while (i < text.length) {
+            const char = text[i];
+
+            // Korean characters (most common case)
+            if (/[가-힣]/.test(char)) {
+                tokens += 1;
+            }
+            // English letters
+            else if (/[a-zA-Z]/.test(char)) {
+                // Count consecutive letters as one token
+                let wordLength = 0;
+                while (i < text.length && /[a-zA-Z]/.test(text[i])) {
+                    wordLength++;
+                    i++;
                 }
+                i--; // Adjust for the loop increment
+                tokens += Math.ceil(wordLength / 4); // Roughly 4 characters per token
             }
-            
-            // Fallback to general estimation
-            return estimateTokens(text);
-        }
-
-        // More accurate token counting using tiktoken-like approach
-        function estimateTokensAdvanced(text) {
-            if (!text) return 0;
-            
-            // This is a simplified version of how tiktoken works
-            let tokens = 0;
-            let i = 0;
-            
-            while (i < text.length) {
-                const char = text[i];
-                
-                // Korean characters (most common case)
-                if (/[가-힣]/.test(char)) {
-                    tokens += 1;
+            // Numbers
+            else if (/[0-9]/.test(char)) {
+                let numLength = 0;
+                while (i < text.length && /[0-9]/.test(text[i])) {
+                    numLength++;
+                    i++;
                 }
-                // English letters
-                else if (/[a-zA-Z]/.test(char)) {
-                    // Count consecutive letters as one token
-                    let wordLength = 0;
-                    while (i < text.length && /[a-zA-Z]/.test(text[i])) {
-                        wordLength++;
-                        i++;
-                    }
-                    i--; // Adjust for the loop increment
-                    tokens += Math.ceil(wordLength / 4); // Roughly 4 characters per token
-                }
-                // Numbers
-                else if (/[0-9]/.test(char)) {
-                    let numLength = 0;
-                    while (i < text.length && /[0-9]/.test(text[i])) {
-                        numLength++;
-                        i++;
-                    }
-                    i--; // Adjust for the loop increment
-                    tokens += Math.ceil(numLength / 3); // Roughly 3 digits per token
-                }
-                // Punctuation and spaces
-                else {
-                    tokens += 1;
-                }
-                
-                i++;
+                i--; // Adjust for the loop increment
+                tokens += Math.ceil(numLength / 3); // Roughly 3 digits per token
             }
-            
-            return tokens;
-        }
-
-        function getSelectedValues() {
-            const model = dom.modelSelect.value;
-            const modelInfo = modelPrices[model];
-            
-            // ===[ MODIFIED BLOCK START ]===
-            // input에서 최대 토큰 값을 직접 읽어옵니다. (기본값 160,000)
-            const maxWindow = (parseFloat(dom.contextLimitInput.value) || 160000);
-            // ===[ MODIFIED BLOCK END ]===
-            
-            // 기본 1500 토큰 + 사용자 입력 시스템 프롬프트 토큰
-            const userSystemTokens = estimateTokensByModel(dom.systemPrompt.value, model);
-            const systemTokens = BASE_SYSTEM_TOKENS + userSystemTokens;
-            
-            return {
-                model: model,
-                maxWindow: maxWindow, // 사용자가 직접 입력한 최대 컨텍스트
-                systemTokens: systemTokens,
-                userSystemTokens: userSystemTokens, // 디스플레이용
-                inputTokens: parseInt(dom.inputSlider.value, 10),
-                outputTokens: parseInt(dom.outputSlider.value, 10),
-                useLorebook: dom.useLorebookCheckbox.checked,
-            };
-        }
-
-        function calculateEffectiveContext(maxWindow) {
-            // 실제 AI가 기억하는 대화 컨텍스트만 계산
-            // 시스템 프롬프트는 포함하지 않음 (컨텍스트 = 대화 내용만)
-            let effectiveContext = 0;
-            for (let i = conversationHistory.length - 1; i >= 0; i--) {
-                const turnTokens = conversationHistory[i].input + conversationHistory[i].output;
-                if (effectiveContext + turnTokens > maxWindow) {
-                    break;
-                }
-                effectiveContext += turnTokens;
-            }
-            return effectiveContext;
-        }
-
-        function previewCost() {
-            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
-            const effectiveContext = calculateEffectiveContext(maxWindow);
-            
-            let lorebookTokens = 0;
-            let retrievalCostKRW = 0;
-
-            if (useLorebook) {
-                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
-                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
-                retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+            // Punctuation and spaces
+            else {
+                tokens += 1;
             }
 
-            // totalInputTokens = 시스템 프롬프트 + 과거 대화 컨텍스트 + 현재 사용자 입력 + 로어북
-            // 시스템 프롬프트는 매 호출마다 입력으로 포함되지만, 컨텍스트에는 저장되지 않음
-            const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
-
-            const prices = modelPrices[model];
-            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
-            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
-            const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
-            
-            const turnCostKRW = llmCostKRW + retrievalCostKRW;
-
-            // Update Preview UI
-            dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
-            dom.preview.systemToken.textContent = `${formatNumber(systemTokens)}`;
-            dom.preview.contextToken.textContent = `${formatNumber(effectiveContext)} / ${formatNumber(Math.floor(maxWindow))}`;
-            dom.preview.userInputToken.textContent = formatNumber(inputTokens);
-            dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
-            dom.preview.outputToken.textContent = formatNumber(outputTokens);
-
-            if (useLorebook) {
-                dom.preview.lorebookToken.textContent = formatNumber(lorebookTokens);
-                dom.preview.lorebookP.classList.remove('hidden');
-            } else {
-                dom.preview.lorebookP.classList.add('hidden');
-            }
-
-            // Update monthly estimate
-            updateMonthlyEstimate(turnCostKRW);
+            i++;
         }
 
-        function updateMonthlyEstimate(turnCostKRW) {
-            const dailyTurns = parseInt(dom.dailyTurns.value) || 100;
-            const userCount = parseInt(document.getElementById('user-count').value) || 1;
-            
-            // 현재 턴 비용 (다음 호출 비용)
-            dom.costBreakdown.perTurnCost.textContent = `${formatKRW(turnCostKRW)}원`;
-            
-            // 일일 비용 계산 - 평균 비용 방식 사용
-            const averageTurnCost = calculateAverageTurnCost(dailyTurns);
-            const perUserDailyCost = averageTurnCost * dailyTurns;
-            const totalDailyCost = perUserDailyCost * userCount;
-            const monthlyCost = totalDailyCost * 30;
-            
-            // 비용 분석 업데이트
-            dom.costBreakdown.perUserDailyCost.textContent = `${formatKRW(perUserDailyCost)}원`;
-            dom.costBreakdown.totalDailyCost.textContent = `${formatKRW(totalDailyCost)}원`;
-            
-            // 월간 비용 업데이트
-            dom.monthly.cost.textContent = `${formatKRW(monthlyCost)}원`;
-        }
+        return tokens;
+    }
 
-        function calculateAverageTurnCost(dailyTurns) {
-            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
-            const prices = modelPrices[model];
-            
-            let retrievalCostPerTurn = 0;
-            let lorebookTokens = 0;
-            
-            if (useLorebook) {
-                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
-                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
-                retrievalCostPerTurn = retrievalCostUSD * USD_TO_KRW;
-            }
-            
-            // 실제 대화 패턴 시뮬레이션 - 현재 컨텍스트에서 시작
-            let totalCost = 0;
-            // currentContext는 대화 내용만 저장 (시스템 프롬프트는 매번 따로 추가됨)
-            let currentContext = calculateEffectiveContext(maxWindow);
-            const turnTokenSize = inputTokens + outputTokens;
-            
-            for (let turn = 0; turn < dailyTurns; turn++) {
-                // 각 턴마다 입력 토큰 계산
-                // 시스템 프롬프트(systemTokens)는 매 턴마다 입력으로 사용되지만
-                // 컨텍스트에는 저장되지 않음 (컨텍스트 = 대화 내용만)
-                const totalInputTokens = systemTokens + currentContext + inputTokens + lorebookTokens;
-                
-                // 비용 계산
-                const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
-                const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
-                const turnCost = (inputCostUSD + outputCostUSD) * USD_TO_KRW + retrievalCostPerTurn;
-                
-                totalCost += turnCost;
-                
-                // 컨텍스트 윈도우 관리: 새 턴 추가 후 윈도우 초과 시 제한
-                const newContext = currentContext + turnTokenSize;
-                if (newContext > maxWindow) {
-                    // 윈도우를 초과하면 최대 윈도우 크기로 제한 (오래된 대화 제거 시뮬레이션)
-                    currentContext = Math.min(maxWindow, newContext);
-                } else {
-                    currentContext = newContext;
-                }
-            }
-            
-            // 평균 턴 비용 반환
-            return totalCost / dailyTurns;
-        }
+    function getSelectedValues() {
+        const model = dom.modelSelect.value;
+        const modelInfo = modelPrices[model];
 
-        function handleAddTurn() {
-            const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
-            const effectiveContext = calculateEffectiveContext(maxWindow);
-            
-            let lorebookTokens = 0;
-            let retrievalCostKRW = 0;
-
-            if (useLorebook) {
-                lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
-                const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
-                retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
-            }
-            
-            const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
-            
-            const prices = modelPrices[model];
-            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
-            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
-            const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
-            
-            const turnCostKRW = llmCostKRW + retrievalCostKRW;
-
-            // Update state
-            totalCostKRW += turnCostKRW;
-            const newTurn = { 
-                turn: conversationHistory.length + 1, 
-                input: inputTokens, 
-                output: outputTokens,
-                usedLorebook: useLorebook 
-            };
-            conversationHistory.push(newTurn);
-            
-            // Update Summary UI
-            const totalAccumulatedContext = conversationHistory.reduce((sum, turn) => sum + turn.input + turn.output, 0);
-            const currentEffectiveContext = calculateEffectiveContext(maxWindow); // 실제 AI가 기억하는 컨텍스트
-            dom.summary.totalCost.textContent = `${formatKRW(totalCostKRW)} 원`;
-            dom.summary.contextToken.textContent = `${formatNumber(currentEffectiveContext)} / ${formatNumber(totalAccumulatedContext)}`;
-            dom.summary.turnCount.textContent = formatNumber(conversationHistory.length);
-            
-            // Add to history log
-            if (conversationHistory.length === 1) dom.summary.historyLog.innerHTML = "";
-            const logEntry = document.createElement('p');
-            const lorebookText = newTurn.usedLorebook ? ' <span class="text-purple-700 font-semibold">[+로어북]</span>' : '';
-            logEntry.innerHTML = `<strong>Turn ${newTurn.turn}:</strong> In ${formatNumber(newTurn.input)} / Out ${formatNumber(newTurn.output)}${lorebookText}`;
-            dom.summary.historyLog.appendChild(logEntry);
-            dom.summary.historyLog.scrollTop = dom.summary.historyLog.scrollHeight;
-
-            // Refresh preview for the next turn
-            previewCost();
-        }
-
-        function resetConversation() {
-            conversationHistory = [];
-            totalCostKRW = 0;
-            
-            // 현재 선택된 모델에 맞는 기본 컨텍스트 값 설정 (최대의 80%)
-            const currentModel = modelPrices[dom.modelSelect.value];
-            const recommendedContext = Math.floor(currentModel.context * 0.8);
-            dom.contextLimitInput.value = recommendedContext.toString();
-            
-            dom.useLorebookCheckbox.checked = false;
-            dom.inputSlider.value = 50;
-            dom.outputSlider.value = 800;
-            dom.inputSliderValue.textContent = formatNumber(50);
-            dom.outputSliderValue.textContent = formatNumber(800);
-
-            dom.summary.historyLog.innerHTML = "<p>아직 대화 기록이 없습니다.</p>";
-            dom.summary.totalCost.textContent = `${formatKRW(0)} 원`;
-            dom.summary.contextToken.textContent = formatNumber(0);
-            dom.summary.turnCount.textContent = formatNumber(0);
-            
-            previewCost();
-        }
-
-        function applyScenario(scenario) {
-            currentScenario = scenario;
-            const preset = scenarioPresets[scenario];
-            
-            // Update UI elements
-            dom.inputSlider.value = preset.input;
-            dom.outputSlider.value = preset.output;
-            dom.useLorebookCheckbox.checked = preset.lorebook;
-            
-            // Update display
-            dom.inputSliderValue.textContent = formatNumber(preset.input);
-            dom.outputSliderValue.textContent = formatNumber(preset.output);
-            
-            // Update scenario card selection
-            document.querySelectorAll('.scenario-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            document.querySelector(`[data-scenario="${scenario}"]`).classList.add('selected');
-            
-            previewCost();
-        }
-
-        // --- EVENT LISTENERS ---
-        dom.addTurnBtn.addEventListener('click', handleAddTurn);
-        dom.resetBtn.addEventListener('click', resetConversation);
-        
-        // Scenario selection
-        document.querySelectorAll('.scenario-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const scenario = card.dataset.scenario;
-                applyScenario(scenario);
-            });
-        });
-        
         // ===[ MODIFIED BLOCK START ]===
-        
-        // 모델 변경 시: context input의 max 값을 업데이트하고, 필요시 현재 값 조정
-        dom.modelSelect.addEventListener('change', () => {
-            const selectedModel = modelPrices[dom.modelSelect.value];
-            const newMax = selectedModel.context;
-            
-            // Update the max attribute of the context limit input
-            dom.contextLimitInput.max = newMax;
-            
-            // Optional: If current value exceeds new max, clamp it
-            if (parseFloat(dom.contextLimitInput.value) > newMax) {
-                dom.contextLimitInput.value = newMax;
-            }
-            
-            previewCost(); // Recalculate
-        });
-        
-        // Listen for changes on checkbox
-        [
-            dom.useLorebookCheckbox,
-        ].forEach(el => {
-            el.addEventListener('change', previewCost);
-        });
-
-        // Listen for input on number fields for real-time updates
-        [
-            dom.contextLimitInput, 
-            dom.dailyTurns,
-            document.getElementById('user-count')
-        ].forEach(el => {
-            el.addEventListener('input', previewCost);
-        });
+        // input에서 최대 토큰 값을 직접 읽어옵니다. (기본값 160,000)
+        const maxWindow = (parseFloat(dom.contextLimitInput.value) || 160000);
         // ===[ MODIFIED BLOCK END ]===
 
-        // System prompt token counting
-        dom.systemPrompt.addEventListener('input', () => {
-            const model = dom.modelSelect.value;
-            const userTokens = estimateTokensByModel(dom.systemPrompt.value, model);
-            const totalSystemTokens = BASE_SYSTEM_TOKENS + userTokens;
-            dom.systemTokenCount.textContent = `${formatNumber(totalSystemTokens)} (기본: 1,500 + 입력: ${formatNumber(userTokens)})`;
-            previewCost();
-        });
+        // 기본 1500 토큰 + 사용자 입력 시스템 프롬프트 토큰
+        const userSystemTokens = estimateTokensByModel(dom.systemPrompt.value, model);
+        const systemTokens = BASE_SYSTEM_TOKENS + userSystemTokens;
 
-        // Listen for input on sliders for real-time updates
-        dom.inputSlider.addEventListener('input', () => {
-            dom.inputSliderValue.textContent = formatNumber(dom.inputSlider.value);
-            previewCost();
-        });
+        return {
+            model: model,
+            maxWindow: maxWindow, // 사용자가 직접 입력한 최대 컨텍스트
+            systemTokens: systemTokens,
+            userSystemTokens: userSystemTokens, // 디스플레이용
+            inputTokens: parseInt(dom.inputSlider.value, 10),
+            outputTokens: parseInt(dom.outputSlider.value, 10),
+            useLorebook: dom.useLorebookCheckbox.checked,
+        };
+    }
 
-        dom.outputSlider.addEventListener('input', () => {
-            dom.outputSliderValue.textContent = formatNumber(dom.outputSlider.value);
-            previewCost();
-        });
+    function calculateEffectiveContext(maxWindow) {
+        // 실제 AI가 기억하는 대화 컨텍스트만 계산
+        // 시스템 프롬프트는 포함하지 않음 (컨텍스트 = 대화 내용만)
+        let effectiveContext = 0;
+        for (let i = conversationHistory.length - 1; i >= 0; i--) {
+            const turnTokens = conversationHistory[i].input + conversationHistory[i].output;
+            if (effectiveContext + turnTokens > maxWindow) {
+                break;
+            }
+            effectiveContext += turnTokens;
+        }
+        return effectiveContext;
+    }
 
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // ===[ NEW BLOCK START ]===
-            // Set initial max for context limit based on default model
-            const initialModel = modelPrices[dom.modelSelect.value];
-            dom.contextLimitInput.max = initialModel.context;
-            // ===[ NEW BLOCK END ]===
+    function previewCost() {
+        const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+        const effectiveContext = calculateEffectiveContext(maxWindow);
 
-            // Initialize system prompt token count
-            const model = dom.modelSelect.value;
-            const userTokens = estimateTokensByModel(dom.systemPrompt.value, model);
-            const totalSystemTokens = BASE_SYSTEM_TOKENS + userTokens;
-            dom.systemTokenCount.textContent = `${formatNumber(totalSystemTokens)} (기본: 1,500 + 입력: ${formatNumber(userTokens)})`;
-            
-            // Apply default scenario
-            applyScenario('casual');
-            
-            // Initial preview
-            previewCost();
+        let lorebookTokens = 0;
+        let retrievalCostKRW = 0;
+
+        if (useLorebook) {
+            lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+            const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+            retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+        }
+
+        // totalInputTokens = 시스템 프롬프트 + 과거 대화 컨텍스트 + 현재 사용자 입력 + 로어북
+        // 시스템 프롬프트는 매 호출마다 입력으로 포함되지만, 컨텍스트에는 저장되지 않음
+        const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
+
+        const prices = modelPrices[model];
+        const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+        const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+        const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+
+        const turnCostKRW = llmCostKRW + retrievalCostKRW;
+
+        // Update Preview UI
+        dom.preview.cost.textContent = `${formatKRW(turnCostKRW)} 원`;
+        dom.preview.systemToken.textContent = `${formatNumber(systemTokens)}`;
+        dom.preview.contextToken.textContent = `${formatNumber(effectiveContext)} / ${formatNumber(Math.floor(maxWindow))}`;
+        dom.preview.userInputToken.textContent = formatNumber(inputTokens);
+        dom.preview.totalInputToken.textContent = formatNumber(totalInputTokens);
+        dom.preview.outputToken.textContent = formatNumber(outputTokens);
+
+        if (useLorebook) {
+            dom.preview.lorebookToken.textContent = formatNumber(lorebookTokens);
+            dom.preview.lorebookP.classList.remove('hidden');
+        } else {
+            dom.preview.lorebookP.classList.add('hidden');
+        }
+
+        // Update monthly estimate
+        updateMonthlyEstimate(turnCostKRW);
+    }
+
+    function updateMonthlyEstimate(turnCostKRW) {
+        const dailyTurns = parseInt(dom.dailyTurns.value) || 100;
+        const userCount = parseInt(document.getElementById('user-count').value) || 1;
+
+        // 현재 턴 비용 (다음 호출 비용)
+        dom.costBreakdown.perTurnCost.textContent = `${formatKRW(turnCostKRW)}원`;
+
+        // 일일 비용 계산 - 평균 비용 방식 사용
+        const averageTurnCost = calculateAverageTurnCost(dailyTurns);
+        const perUserDailyCost = averageTurnCost * dailyTurns;
+        const totalDailyCost = perUserDailyCost * userCount;
+        const monthlyCost = totalDailyCost * 30;
+
+        // 비용 분석 업데이트
+        dom.costBreakdown.perUserDailyCost.textContent = `${formatKRW(perUserDailyCost)}원`;
+        dom.costBreakdown.totalDailyCost.textContent = `${formatKRW(totalDailyCost)}원`;
+
+        // 월간 비용 업데이트
+        dom.monthly.cost.textContent = `${formatKRW(monthlyCost)}원`;
+    }
+
+    function calculateAverageTurnCost(dailyTurns) {
+        const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+        const prices = modelPrices[model];
+
+        let retrievalCostPerTurn = 0;
+        let lorebookTokens = 0;
+
+        if (useLorebook) {
+            lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+            const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+            retrievalCostPerTurn = retrievalCostUSD * USD_TO_KRW;
+        }
+
+        // 실제 대화 패턴 시뮬레이션 - 현재 컨텍스트에서 시작
+        let totalCost = 0;
+        // currentContext는 대화 내용만 저장 (시스템 프롬프트는 매번 따로 추가됨)
+        let currentContext = calculateEffectiveContext(maxWindow);
+        const turnTokenSize = inputTokens + outputTokens;
+
+        for (let turn = 0; turn < dailyTurns; turn++) {
+            // 각 턴마다 입력 토큰 계산
+            // 시스템 프롬프트(systemTokens)는 매 턴마다 입력으로 사용되지만
+            // 컨텍스트에는 저장되지 않음 (컨텍스트 = 대화 내용만)
+            const totalInputTokens = systemTokens + currentContext + inputTokens + lorebookTokens;
+
+            // 비용 계산
+            const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+            const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+            const turnCost = (inputCostUSD + outputCostUSD) * USD_TO_KRW + retrievalCostPerTurn;
+
+            totalCost += turnCost;
+
+            // 컨텍스트 윈도우 관리: 새 턴 추가 후 윈도우 초과 시 제한
+            const newContext = currentContext + turnTokenSize;
+            if (newContext > maxWindow) {
+                // 윈도우를 초과하면 최대 윈도우 크기로 제한 (오래된 대화 제거 시뮬레이션)
+                currentContext = Math.min(maxWindow, newContext);
+            } else {
+                currentContext = newContext;
+            }
+        }
+
+        // 평균 턴 비용 반환
+        return totalCost / dailyTurns;
+    }
+
+    function handleAddTurn() {
+        const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getSelectedValues();
+        const effectiveContext = calculateEffectiveContext(maxWindow);
+
+        let lorebookTokens = 0;
+        let retrievalCostKRW = 0;
+
+        if (useLorebook) {
+            lorebookTokens = LOREBOOK_DOCUMENT_TOKENS;
+            const retrievalCostUSD = (lorebookTokens / 1_000_000) * (retrievalPrices.embedding.cost + retrievalPrices.ranking.cost);
+            retrievalCostKRW = retrievalCostUSD * USD_TO_KRW;
+        }
+
+        const totalInputTokens = systemTokens + effectiveContext + inputTokens + lorebookTokens;
+
+        const prices = modelPrices[model];
+        const inputCostUSD = (totalInputTokens / 1_000_000) * prices.input;
+        const outputCostUSD = (outputTokens / 1_000_000) * prices.output;
+        const llmCostKRW = (inputCostUSD + outputCostUSD) * USD_TO_KRW;
+
+        const turnCostKRW = llmCostKRW + retrievalCostKRW;
+
+        // Update state
+        totalCostKRW += turnCostKRW;
+        const newTurn = {
+            turn: conversationHistory.length + 1,
+            input: inputTokens,
+            output: outputTokens,
+            usedLorebook: useLorebook
+        };
+        conversationHistory.push(newTurn);
+
+        // Update Summary UI
+        const totalAccumulatedContext = conversationHistory.reduce((sum, turn) => sum + turn.input + turn.output, 0);
+        const currentEffectiveContext = calculateEffectiveContext(maxWindow); // 실제 AI가 기억하는 컨텍스트
+        dom.summary.totalCost.textContent = `${formatKRW(totalCostKRW)} 원`;
+        dom.summary.contextToken.textContent = `${formatNumber(currentEffectiveContext)} / ${formatNumber(totalAccumulatedContext)}`;
+        dom.summary.turnCount.textContent = formatNumber(conversationHistory.length);
+
+        // Add to history log
+        if (conversationHistory.length === 1) dom.summary.historyLog.innerHTML = "";
+        const logEntry = document.createElement('p');
+        const lorebookText = newTurn.usedLorebook ? ' <span class="text-purple-700 font-semibold">[+로어북]</span>' : '';
+        logEntry.innerHTML = `<strong>Turn ${newTurn.turn}:</strong> In ${formatNumber(newTurn.input)} / Out ${formatNumber(newTurn.output)}${lorebookText}`;
+        dom.summary.historyLog.appendChild(logEntry);
+        dom.summary.historyLog.scrollTop = dom.summary.historyLog.scrollHeight;
+
+        // Refresh preview for the next turn
+        previewCost();
+    }
+
+    function resetConversation() {
+        conversationHistory = [];
+        totalCostKRW = 0;
+
+        // 현재 선택된 모델에 맞는 기본 컨텍스트 값 설정 (최대의 80%)
+        const currentModel = modelPrices[dom.modelSelect.value];
+        const recommendedContext = Math.floor(currentModel.context * 0.8);
+        dom.contextLimitInput.value = recommendedContext.toString();
+
+        dom.useLorebookCheckbox.checked = false;
+        dom.inputSlider.value = 50;
+        dom.outputSlider.value = 800;
+        dom.inputSliderValue.textContent = formatNumber(50);
+        dom.outputSliderValue.textContent = formatNumber(800);
+
+        dom.summary.historyLog.innerHTML = "<p>아직 대화 기록이 없습니다.</p>";
+        dom.summary.totalCost.textContent = `${formatKRW(0)} 원`;
+        dom.summary.contextToken.textContent = formatNumber(0);
+        dom.summary.turnCount.textContent = formatNumber(0);
+
+        previewCost();
+    }
+
+    function applyScenario(scenario) {
+        currentScenario = scenario;
+        const preset = scenarioPresets[scenario];
+
+        // Update UI elements
+        dom.inputSlider.value = preset.input;
+        dom.outputSlider.value = preset.output;
+        dom.useLorebookCheckbox.checked = preset.lorebook;
+
+        // Update display
+        dom.inputSliderValue.textContent = formatNumber(preset.input);
+        dom.outputSliderValue.textContent = formatNumber(preset.output);
+
+        // Update scenario card selection
+        document.querySelectorAll('.scenario-card').forEach(card => {
+            card.classList.remove('selected');
         });
-    </script>
+        document.querySelector(`[data-scenario="${scenario}"]`).classList.add('selected');
+
+        previewCost();
+    }
+
+    // --- EVENT LISTENERS ---
+    dom.addTurnBtn.addEventListener('click', handleAddTurn);
+    dom.resetBtn.addEventListener('click', resetConversation);
+
+    // Scenario selection
+    document.querySelectorAll('.scenario-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const scenario = card.dataset.scenario;
+            applyScenario(scenario);
+        });
+    });
+
+    // ===[ MODIFIED BLOCK START ]===
+
+    // 모델 변경 시: context input의 max 값을 업데이트하고, 필요시 현재 값 조정
+    dom.modelSelect.addEventListener('change', () => {
+        const selectedModel = modelPrices[dom.modelSelect.value];
+        const newMax = selectedModel.context;
+
+        // Update the max attribute of the context limit input
+        dom.contextLimitInput.max = newMax;
+
+        // Optional: If current value exceeds new max, clamp it
+        if (parseFloat(dom.contextLimitInput.value) > newMax) {
+            dom.contextLimitInput.value = newMax;
+        }
+
+        previewCost(); // Recalculate
+    });
+
+    // Listen for changes on checkbox
+    [
+        dom.useLorebookCheckbox,
+    ].forEach(el => {
+        el.addEventListener('change', previewCost);
+    });
+
+    // Listen for input on number fields for real-time updates
+    [
+        dom.contextLimitInput,
+        dom.dailyTurns,
+        document.getElementById('user-count')
+    ].forEach(el => {
+        el.addEventListener('input', previewCost);
+    });
+    // ===[ MODIFIED BLOCK END ]===
+
+    // System prompt token counting
+    dom.systemPrompt.addEventListener('input', () => {
+        const model = dom.modelSelect.value;
+        const userTokens = estimateTokensByModel(dom.systemPrompt.value, model);
+        const totalSystemTokens = BASE_SYSTEM_TOKENS + userTokens;
+        dom.systemTokenCount.textContent = `${formatNumber(totalSystemTokens)} (기본: 1,500 + 입력: ${formatNumber(userTokens)})`;
+        previewCost();
+    });
+
+    // Listen for input on sliders for real-time updates
+    dom.inputSlider.addEventListener('input', () => {
+        dom.inputSliderValue.textContent = formatNumber(dom.inputSlider.value);
+        previewCost();
+    });
+
+    dom.outputSlider.addEventListener('input', () => {
+        dom.outputSliderValue.textContent = formatNumber(dom.outputSlider.value);
+        previewCost();
+    });
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // ===[ NEW BLOCK START ]===
+        // Set initial max for context limit based on default model
+        const initialModel = modelPrices[dom.modelSelect.value];
+        dom.contextLimitInput.max = initialModel.context;
+        // ===[ NEW BLOCK END ]===
+
+        // Initialize system prompt token count
+        const model = dom.modelSelect.value;
+        const userTokens = estimateTokensByModel(dom.systemPrompt.value, model);
+        const totalSystemTokens = BASE_SYSTEM_TOKENS + userTokens;
+        dom.systemTokenCount.textContent = `${formatNumber(totalSystemTokens)} (기본: 1,500 + 입력: ${formatNumber(userTokens)})`;
+
+        // Apply default scenario
+        applyScenario('casual');
+
+        // Initial preview
+        previewCost();
+    });
+</script>
 </body>
 </html>
