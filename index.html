@@ -3,101 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 비용 계산기</title>
+    <title>채팅 워크플로우 비용 계산기</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; }
 
         input[type="range"] {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 9999px;
-            outline: none;
+            -webkit-appearance: none; appearance: none;
+            width: 100%; height: 6px;
+            background: #e2e8f0; border-radius: 9999px; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: #3B82F6;
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid white;
+            width: 18px; height: 18px;
+            background: #3B82F6; cursor: pointer;
+            border-radius: 50%; border: 2px solid white;
             box-shadow: 0 1px 4px rgba(0,0,0,0.2);
         }
         input[type="range"]::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            background: #3B82F6;
-            cursor: pointer;
-            border-radius: 50%;
-            border: 2px solid white;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+            width: 18px; height: 18px;
+            background: #3B82F6; cursor: pointer;
+            border-radius: 50%; border: 2px solid white;
         }
-
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        .scenario-card {
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .scenario-card:hover {
-            border-color: #93c5fd;
-            background-color: #eff6ff;
-        }
-        .scenario-card.selected {
-            border-color: #3B82F6;
-            background-color: #eff6ff;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 10px 14px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 14px;
-            transition: all 0.15s;
-            outline: none;
-        }
-        .input-field:focus {
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
         .card {
-            background: white;
-            border-radius: 16px;
+            background: white; border-radius: 16px;
             border: 1px solid #f1f5f9;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             padding: 20px;
         }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 14px;
+        .input-field {
+            width: 100%; padding: 9px 12px;
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 10px; font-size: 13px;
+            transition: all 0.15s; outline: none;
         }
-
-        .thinking-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 10px;
-            font-weight: 600;
-            color: #7c3aed;
-            background: #f3e8ff;
-            padding: 2px 7px;
-            border-radius: 20px;
+        .input-field:focus {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
         }
+        .sec-label {
+            font-size: 11px; font-weight: 700;
+            color: #6b7280; margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .tab-btn {
+            padding: 7px 18px; border-radius: 8px;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.15s; cursor: pointer; border: none; outline: none;
+        }
+        .tab-btn.active { background: #3B82F6; color: white; }
+        .tab-btn:not(.active) { background: transparent; color: #6b7280; }
+        .tab-btn:not(.active):hover { color: #374151; background: #f1f5f9; }
+
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e2e8f0; border-radius: 22px; transition: 0.2s;
+        }
+        .toggle-slider:before {
+            position: absolute; content: "";
+            height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; border-radius: 50%; transition: 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        input:checked + .toggle-slider { background-color: #3B82F6; }
+        input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+        .bar-fill { height: 8px; border-radius: 9999px; transition: width 0.4s ease; min-width: 2px; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -105,502 +84,719 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
 
     <!-- Header -->
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-1.5">AI 비용 계산기</h1>
-        <p class="text-gray-500 text-sm">챗봇 API 호출 비용을 정확하게 예측하세요</p>
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">채팅 워크플로우 비용 계산기</h1>
+        <p class="text-sm text-gray-500 mt-1">episodeKeywords · Long Term Memory · Main Chat 3단계 파이프라인 기반 운영 비용 산정</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <!-- Tabs -->
+    <div class="flex items-center gap-1 bg-white border border-gray-200 rounded-xl p-1 w-fit mb-5 shadow-sm">
+        <button class="tab-btn active" id="tab-session">세션 시뮬레이터</button>
+        <button class="tab-btn" id="tab-scale">규모 비용 예측</button>
+    </div>
 
-        <!-- ======================== LEFT: Settings ======================== -->
-        <div class="lg:col-span-2 space-y-4">
+    <!-- ═══════════════ TAB 1: SESSION SIMULATOR ═══════════════ -->
+    <div id="panel-session">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
 
-            <!-- 1. 시나리오 선택 -->
-            <div class="card">
-                <p class="section-title">시나리오 선택</p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    <div class="scenario-card p-3 border-2 border-gray-200 rounded-xl text-center" data-scenario="casual">
-                        <div class="text-xl mb-1">💬</div>
-                        <div class="font-semibold text-sm text-gray-800">일반 대화</div>
-                        <div class="text-xs text-gray-400 mt-1">In 30 / Out 200</div>
-                    </div>
-                    <div class="scenario-card p-3 border-2 border-gray-200 rounded-xl text-center" data-scenario="story">
-                        <div class="text-xl mb-1">📚</div>
-                        <div class="font-semibold text-sm text-gray-800">스토리텔링</div>
-                        <div class="text-xs text-gray-400 mt-1">In 100 / Out 600</div>
-                    </div>
-                    <div class="scenario-card p-3 border-2 border-gray-200 rounded-xl text-center" data-scenario="roleplay">
-                        <div class="text-xl mb-1">🎭</div>
-                        <div class="font-semibold text-sm text-gray-800">역할극</div>
-                        <div class="text-xs text-gray-400 mt-1">In 150 / Out 400</div>
-                    </div>
-                    <div class="scenario-card p-3 border-2 border-gray-200 rounded-xl text-center" data-scenario="custom">
-                        <div class="text-xl mb-1">⚙️</div>
-                        <div class="font-semibold text-sm text-gray-800">사용자 정의</div>
-                        <div class="text-xs text-gray-400 mt-1">직접 설정</div>
-                    </div>
-                </div>
-            </div>
+            <!-- LEFT: Config (2/5) -->
+            <div class="lg:col-span-2 space-y-4">
 
-            <!-- 2. 모델 & 컨텍스트 -->
-            <div class="card">
-                <p class="section-title">모델 & 컨텍스트 설정</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1.5">AI 모델</label>
-                        <select id="model-select" class="input-field">
-                            <optgroup label="Anthropic">
-                                <option value="claude-4.6-sonnet">Claude 4.6 Sonnet (200K)</option>
-                                <option value="claude-4.6-opus">Claude 4.6 Opus (200K)</option>
-                            </optgroup>
-                            <optgroup label="Google VertexAI">
-                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (1M) — Thinking</option>
-                                <option value="gemini-3.0-flash">Gemini 3.0 Flash (1M) — Thinking</option>
-                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (1M)</option>
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (1M)</option>
-                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (1M)</option>
-                            </optgroup>
-                            <optgroup label="xAI">
-                                <option value="grok-4.1-fast">Grok 4.1 Fast Non-Reasoning (2M)</option>
-                            </optgroup>
-                        </select>
-                        <div class="mt-1.5 flex items-center gap-2">
-                            <p id="model-price-display" class="text-xs text-gray-400"></p>
-                            <span id="thinking-badge" class="thinking-badge hidden">Thinking +1,000 tok</span>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-600 mb-1.5">컨텍스트 최대 토큰</label>
-                        <input type="number" id="context-limit-input" value="160000"
-                               class="input-field text-center font-semibold">
-                        <p class="mt-1.5 text-xs text-gray-400">모델 최대: <span id="model-max-context">200,000</span> 토큰</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. 토큰 설정 -->
-            <div class="card">
-                <p class="section-title">토큰 설정</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="text-sm font-medium text-gray-600">사용자 입력</label>
-                            <span id="input-slider-value" class="text-sm font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">50</span>
-                        </div>
-                        <input type="range" id="input-slider" min="0" max="5000" value="50" step="10">
-                        <div class="flex justify-between text-xs text-gray-300 mt-1">
-                            <span>0</span><span>5,000 tok</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="text-sm font-medium text-gray-600">AI 출력</label>
-                            <span id="output-slider-value" class="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full">800</span>
-                        </div>
-                        <input type="range" id="output-slider" min="0" max="5000" value="800" step="10">
-                        <div class="flex justify-between text-xs text-gray-300 mt-1">
-                            <span>0</span><span>5,000 tok</span>
-                        </div>
+                <!-- Model -->
+                <div class="card">
+                    <p class="sec-label">메인챗 모델</p>
+                    <select id="main-model" class="input-field">
+                        <optgroup label="Anthropic">
+                            <option value="claude-4.6-sonnet">Claude 4.6 Sonnet</option>
+                            <option value="claude-4.6-opus">Claude 4.6 Opus</option>
+                        </optgroup>
+                        <optgroup label="Google">
+                            <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
+                            <option value="gemini-3.0-flash">Gemini 3.0 Flash</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash</option>
+                            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                        </optgroup>
+                        <optgroup label="xAI">
+                            <option value="grok-4.1-fast">Grok 4.1 Fast</option>
+                        </optgroup>
+                    </select>
+                    <div class="mt-2 flex items-center justify-between">
+                        <span id="model-price-info" class="text-xs text-gray-400"></span>
+                        <span id="model-max-out" class="text-xs font-semibold text-blue-500"></span>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-4 border-t border-gray-100">
-                    <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors">
-                        <input type="checkbox" id="use-lorebook" class="h-4 w-4 text-blue-600 rounded focus:ring-blue-500">
+                <!-- System Token Options -->
+                <div class="card">
+                    <p class="sec-label">시스템 토큰 구성</p>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <span class="text-sm text-gray-500">기본 시스템 프롬프트 <span class="text-xs text-gray-400">(고정)</span></span>
+                            <span class="text-sm font-semibold text-gray-700">5,000</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                            <span class="text-sm text-gray-500">메모리 컨텍스트 (임베딩 검색) <span class="text-xs text-gray-400">(고정)</span></span>
+                            <span class="text-sm font-semibold text-gray-700">800</span>
+                        </div>
+                        <label class="flex items-center justify-between py-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50 rounded-lg px-1">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="opt-media" class="w-4 h-4 accent-blue-600 rounded">
+                                <span class="text-sm text-gray-700">미디어 리스트</span>
+                            </div>
+                            <span class="text-sm font-semibold text-blue-600">+1,000</span>
+                        </label>
+                        <label class="flex items-center justify-between py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-1">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="opt-notes" class="w-4 h-4 accent-blue-600 rounded">
+                                <span class="text-sm text-gray-700">유저 노트</span>
+                            </div>
+                            <span class="text-sm font-semibold text-blue-600">+3,100</span>
+                        </label>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                        <span class="text-xs font-bold text-gray-600">시스템 합계 (+ 사용자 입력)</span>
+                        <span id="total-sys-tok" class="text-sm font-bold text-gray-900">5,800</span>
+                    </div>
+                </div>
+
+                <!-- User Input -->
+                <div class="card">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="sec-label mb-0">사용자 입력 토큰 (평균)</p>
+                        <span id="user-input-val" class="text-sm font-bold text-blue-600">75</span>
+                    </div>
+                    <input type="range" id="user-input-slider" min="10" max="500" value="75" step="5">
+                    <div class="flex justify-between text-xs text-gray-300 mt-1"><span>10</span><span>500 tok</span></div>
+                </div>
+
+                <!-- Workflow Toggles -->
+                <div class="card">
+                    <p class="sec-label">워크플로우 파이프라인</p>
+                    <div class="space-y-2.5">
+                        <!-- Step 1 -->
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                                <div>
+                                    <p class="text-sm font-bold text-blue-900">episodeKeywords</p>
+                                    <p class="text-xs text-blue-500">Gemini 2.5 Flash Lite · 매 턴 (2턴~)</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch shrink-0">
+                                <input type="checkbox" id="toggle-episode" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                                <div>
+                                    <p class="text-sm font-bold text-purple-900">Long Term Memory</p>
+                                    <p class="text-xs text-purple-500">Gemini 2.5 Flash · 5회마다 + Titan Embed</p>
+                                </div>
+                            </div>
+                            <label class="toggle-switch shrink-0">
+                                <input type="checkbox" id="toggle-ltm" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                                <div>
+                                    <p class="text-sm font-bold text-emerald-900">Main Chat</p>
+                                    <p id="main-chat-sublabel" class="text-xs text-emerald-600">Gemini 2.5 Flash · 매 턴</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-lg">항상</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulation Settings -->
+                <div class="card">
+                    <p class="sec-label">시뮬레이션 설정</p>
+                    <div class="space-y-4">
                         <div>
-                            <span class="text-sm font-medium text-gray-700">로어북 (벡터 검색) 사용</span>
-                            <span class="text-xs text-gray-400 ml-2">+500 토큰</span>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm text-gray-600">총 대화 턴 수</label>
+                                <span id="sim-turns-val" class="text-sm font-bold text-gray-800">20 턴</span>
+                            </div>
+                            <input type="range" id="sim-turns-slider" min="1" max="200" value="20" step="1">
+                            <div class="flex justify-between text-xs text-gray-300 mt-1"><span>1</span><span>200 턴</span></div>
                         </div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- 4. 추가 시스템 프롬프트 -->
-            <div class="card">
-                <p class="section-title">추가 시스템 프롬프트 <span class="font-normal text-gray-400">(선택)</span></p>
-                <textarea id="system-prompt" rows="3"
-                          class="input-field resize-none"
-                          placeholder="추가 지시사항을 입력하세요..."></textarea>
-                <p class="mt-1.5 text-xs text-gray-400">
-                    추가 입력 토큰: <span id="system-token-count" class="font-semibold text-gray-600">0</span>
-                </p>
-            </div>
-
-            <!-- Buttons -->
-            <div class="grid grid-cols-2 gap-3">
-                <button id="add-turn-btn"
-                        class="py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl transition-colors shadow-sm text-sm">
-                    + 대화 턴 추가
-                </button>
-                <button id="reset-btn"
-                        class="py-3.5 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-600 font-bold rounded-xl transition-colors text-sm">
-                    초기화
-                </button>
-            </div>
-        </div>
-
-        <!-- ======================== RIGHT: Cost Display ======================== -->
-        <div class="space-y-4">
-
-            <!-- 기본 토큰 구성 -->
-            <div class="card">
-                <p class="section-title">기본 토큰 구성 (Default)</p>
-                <div class="space-y-2.5">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">시스템 프롬프트</span>
-                        <span class="text-xs font-semibold text-gray-700">4,000 tok</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-500">장기기억 & 메모리 검색</span>
-                        <span class="text-xs font-semibold text-gray-700">1,000 tok</span>
-                    </div>
-                    <div id="thinking-tokens-row" class="hidden flex justify-between items-center">
-                        <span class="text-xs text-violet-600 font-medium">Thinking Tokens (Gemini 3)</span>
-                        <span class="text-xs font-semibold text-violet-700">+1,000 tok (out)</span>
-                    </div>
-                    <div class="flex justify-between items-center pt-2.5 border-t border-gray-100">
-                        <span class="text-xs font-semibold text-gray-600">기본 입력 합계</span>
-                        <span class="text-xs font-bold text-blue-600">5,000 tok</span>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm text-gray-600">LTM 출력 성장 추정치</label>
+                                <span id="ltm-growth-val" class="text-sm font-bold text-gray-800">+150 tok/회</span>
+                            </div>
+                            <input type="range" id="ltm-growth-slider" min="0" max="500" value="150" step="25">
+                            <div class="flex justify-between text-xs text-gray-300 mt-1"><span>0</span><span>+500 tok</span></div>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-600 block mb-1">환율 (USD/KRW)</label>
+                            <input type="number" id="usd-krw" value="1470" class="input-field text-center font-bold">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 다음 호출 예상 비용 -->
-            <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-5 text-white shadow-lg">
-                <p class="text-xs font-semibold opacity-75 mb-1 tracking-wide uppercase">다음 호출 예상 비용</p>
-                <p id="preview-cost" class="text-4xl font-bold mb-5 tracking-tight">0.00 원</p>
+            <!-- RIGHT: Results (3/5) -->
+            <div class="lg:col-span-3 space-y-4">
 
-                <div class="bg-white/15 rounded-xl p-3.5 space-y-2">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="opacity-80">시스템 (기본+추가)</span>
-                        <span id="preview-system-token" class="font-semibold">5,000</span>
+                <!-- Live Per-turn Preview -->
+                <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-5 text-white shadow-lg">
+                    <p class="text-xs font-semibold opacity-50 uppercase tracking-wider mb-3">1턴 기준 비용 (실시간)</p>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="bg-white/10 rounded-xl p-3 text-center">
+                            <p class="text-xs opacity-60 mb-1">episodeKeywords</p>
+                            <p id="live-ep-cost" class="text-lg font-bold">₩0.00</p>
+                            <p class="text-xs opacity-40 mt-0.5">Flash Lite</p>
+                        </div>
+                        <div class="bg-white/10 rounded-xl p-3 text-center">
+                            <p class="text-xs opacity-60 mb-1">Main Chat</p>
+                            <p id="live-main-cost" class="text-lg font-bold">₩0.00</p>
+                            <p id="live-main-model" class="text-xs opacity-40 mt-0.5"></p>
+                        </div>
+                        <div class="bg-white/10 rounded-xl p-3 text-center">
+                            <p class="text-xs opacity-60 mb-1">합계 (LTM 제외)</p>
+                            <p id="live-total-cost" class="text-xl font-bold text-blue-300">₩0.00</p>
+                            <p class="text-xs opacity-40 mt-0.5">LTM은 5턴마다</p>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="opacity-80">컨텍스트 (유효/최대)</span>
-                        <span id="preview-context-token" class="font-semibold">0 / 0</span>
+                    <div class="bg-white/10 rounded-xl p-3 grid grid-cols-2 gap-2 text-xs">
+                        <div class="flex justify-between"><span class="opacity-60">Main 입력 합계</span><span id="live-main-in" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">Main 최대 출력</span><span id="live-main-out" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">LTM 1회차 비용</span><span id="live-ltm-first" class="font-semibold text-purple-300"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">LTM 출력 성장</span><span id="live-ltm-growth" class="font-semibold text-purple-300"></span></div>
                     </div>
-                    <div id="preview-lorebook-row" class="hidden flex justify-between items-center text-xs">
-                        <span class="opacity-80">로어북</span>
-                        <span id="preview-lorebook-token" class="font-semibold">500</span>
+                </div>
+
+                <!-- Simulation Results -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="sec-label mb-0">시뮬레이션 결과</p>
+                        <span id="sim-badge" class="text-xs bg-blue-100 text-blue-700 font-bold px-2.5 py-1 rounded-lg">20턴 기준</span>
                     </div>
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="opacity-80">사용자 입력</span>
-                        <span id="preview-user-input-token" class="font-semibold">50</span>
+
+                    <!-- Total highlight -->
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-700 rounded-xl p-4 text-white mb-4">
+                        <p class="text-xs opacity-75 mb-1">총 비용</p>
+                        <p id="sim-total" class="text-3xl font-bold">₩0</p>
+                        <div class="flex gap-5 mt-2 text-xs opacity-80">
+                            <span>턴당 평균 <span id="sim-per-turn" class="font-bold"></span></span>
+                            <span>LTM 실행 <span id="sim-ltm-runs" class="font-bold"></span>회</span>
+                            <span>LTM 비중 <span id="sim-ltm-pct" class="font-bold"></span></span>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-xs pt-2 border-t border-white/20 font-bold">
-                        <span>→ 총 입력 (Input)</span>
-                        <span id="preview-total-input-token">0</span>
+
+                    <!-- Breakdown bars -->
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-600 mb-1.5">
+                                <span class="font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>Main Chat</span>
+                                <span id="sim-main-krw" class="font-bold"></span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-100 rounded-full"><div id="bar-main" class="bar-fill bg-emerald-500" style="width:0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-600 mb-1.5">
+                                <span class="font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-500 inline-block"></span>Long Term Memory</span>
+                                <span id="sim-ltm-krw" class="font-bold"></span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-100 rounded-full"><div id="bar-ltm" class="bar-fill bg-purple-500" style="width:0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-600 mb-1.5">
+                                <span class="font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span>episodeKeywords</span>
+                                <span id="sim-ep-krw" class="font-bold"></span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-100 rounded-full"><div id="bar-ep" class="bar-fill bg-blue-500" style="width:0%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-600 mb-1.5">
+                                <span class="font-semibold flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>Titan Embedding</span>
+                                <span id="sim-embed-krw" class="font-bold"></span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-100 rounded-full"><div id="bar-embed" class="bar-fill bg-amber-400" style="width:0%"></div></div>
+                        </div>
                     </div>
-                    <div class="flex justify-between items-center text-xs font-bold">
-                        <span>→ 총 출력 (Output)</span>
-                        <span id="preview-output-token">0</span>
-                    </div>
-                    <div id="preview-thinking-row" class="hidden flex justify-between items-center text-xs opacity-70">
-                        <span class="italic">↳ Thinking 포함 (+1,000)</span>
-                        <span></span>
+                </div>
+
+                <!-- LTM Growth Table -->
+                <div class="card" id="ltm-table-card">
+                    <p class="sec-label">LTM 실행별 비용 성장 <span class="normal-case font-normal text-gray-400">(Gemini 2.5 Flash)</span></p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="border-b border-gray-100 text-gray-500">
+                                    <th class="text-left py-2 font-semibold">실행</th>
+                                    <th class="text-left py-2 font-semibold">턴</th>
+                                    <th class="text-right py-2 font-semibold">Input tok</th>
+                                    <th class="text-right py-2 font-semibold">Output tok</th>
+                                    <th class="text-right py-2 font-semibold">비용</th>
+                                    <th class="text-right py-2 font-semibold">누적</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ltm-tbody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-
-            <!-- 대화 누적 요약 -->
-            <div class="card">
-                <p class="section-title">대화 누적 요약</p>
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-sm text-gray-500">총 누적 비용</span>
-                    <span id="summary-total-cost" class="text-2xl font-bold text-gray-900">0.00 원</span>
-                </div>
-                <div class="space-y-2 text-xs text-gray-500 border-t border-gray-100 pt-3">
-                    <div class="flex justify-between">
-                        <span>기억 용량 (유효/전체)</span>
-                        <span id="summary-context-token" class="font-semibold text-gray-700">0 / 0</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>총 대화 턴</span>
-                        <span id="summary-turn-count" class="font-semibold text-gray-700">0 회</span>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <p class="text-xs text-gray-400 mb-1.5">대화 기록</p>
-                    <div id="history-log" class="max-h-28 overflow-y-auto text-xs text-gray-400 space-y-1 bg-gray-50 rounded-xl p-3">
-                        <p>아직 대화 기록이 없습니다.</p>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
+
+    <!-- ═══════════════ TAB 2: SCALE COST PROJECTION ═══════════════ -->
+    <div id="panel-scale" class="hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-5">
+
+            <!-- LEFT: Scale Config (2/5) -->
+            <div class="lg:col-span-2 space-y-4">
+
+                <!-- Current config banner -->
+                <div class="card bg-slate-800 text-white border-0">
+                    <p class="text-xs opacity-50 uppercase tracking-wide mb-2">세션 설정 기준 (Tab 1)</p>
+                    <div class="space-y-1 text-xs">
+                        <div class="flex justify-between"><span class="opacity-60">메인챗 모델</span><span id="scale-model-name" class="font-semibold text-blue-300"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">시스템 토큰</span><span id="scale-sys-tok" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">episodeKeywords</span><span id="scale-ep-status" class="font-semibold"></span></div>
+                        <div class="flex justify-between"><span class="opacity-60">Long Term Memory</span><span id="scale-ltm-status" class="font-semibold"></span></div>
+                    </div>
+                </div>
+
+                <!-- Scale sliders -->
+                <div class="card">
+                    <p class="sec-label">규모 설정</p>
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm text-gray-600">DAU (일간 활성 유저)</label>
+                                <span id="scale-dau-val" class="text-sm font-bold text-gray-800">1,000명</span>
+                            </div>
+                            <input type="range" id="scale-dau" min="100" max="100000" value="1000" step="100">
+                            <div class="flex justify-between text-xs text-gray-300 mt-1"><span>100</span><span>100,000</span></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm text-gray-600">세션 수 / 유저 / 일</label>
+                                <span id="scale-sess-val" class="text-sm font-bold text-gray-800">1 세션</span>
+                            </div>
+                            <input type="range" id="scale-sess" min="1" max="10" value="1" step="1">
+                            <div class="flex justify-between text-xs text-gray-300 mt-1"><span>1</span><span>10</span></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm text-gray-600">세션당 평균 턴 수</label>
+                                <span id="scale-turns-val" class="text-sm font-bold text-gray-800">20 턴</span>
+                            </div>
+                            <input type="range" id="scale-turns" min="1" max="100" value="20" step="1">
+                            <div class="flex justify-between text-xs text-gray-300 mt-1"><span>1턴</span><span>100턴</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary stats -->
+                <div class="card bg-blue-50 border-blue-100">
+                    <p class="sec-label text-blue-700">일간 규모</p>
+                    <p id="scale-daily-sess" class="text-3xl font-bold text-blue-900">1,000</p>
+                    <p class="text-xs text-blue-500 mb-3">일간 총 세션 수</p>
+                    <div class="space-y-1 text-xs text-blue-700">
+                        <div class="flex justify-between"><span>세션당 턴</span><span id="scale-sess-info" class="font-bold">20 턴</span></div>
+                        <div class="flex justify-between"><span>일간 총 턴</span><span id="scale-daily-turns" class="font-bold">20,000 턴</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Scale Results (3/5) -->
+            <div class="lg:col-span-3 space-y-4">
+
+                <!-- Selected model summary -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="card text-center">
+                        <p class="text-xs text-gray-500 mb-1">세션당 비용</p>
+                        <p id="scale-per-sess" class="text-xl font-bold text-gray-900">₩0</p>
+                        <p class="text-xs text-gray-400 mt-0.5">선택 모델</p>
+                    </div>
+                    <div class="card text-center">
+                        <p class="text-xs text-gray-500 mb-1">일간 총 비용</p>
+                        <p id="scale-daily-cost" class="text-xl font-bold text-blue-700">₩0</p>
+                        <p class="text-xs text-gray-400 mt-0.5">선택 모델</p>
+                    </div>
+                    <div class="card text-center">
+                        <p class="text-xs text-gray-500 mb-1">월간 총 비용</p>
+                        <p id="scale-monthly-cost" class="text-2xl font-bold text-blue-700">₩0</p>
+                        <p class="text-xs text-gray-400 mt-0.5">× 30일</p>
+                    </div>
+                </div>
+
+                <!-- All model comparison table -->
+                <div class="card">
+                    <p class="sec-label">전체 모델 월간 비용 비교</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="border-b border-gray-100 text-gray-500">
+                                    <th class="text-left py-2.5 font-semibold">모델</th>
+                                    <th class="text-right py-2.5 font-semibold">세션당</th>
+                                    <th class="text-right py-2.5 font-semibold">일간</th>
+                                    <th class="text-right py-2.5 font-semibold">월간</th>
+                                    <th class="text-right py-2.5 font-semibold">유저당/월</th>
+                                </tr>
+                            </thead>
+                            <tbody id="model-compare-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Per-user monthly cost bar chart -->
+                <div class="card">
+                    <p class="sec-label">유저당 월간 비용 비교</p>
+                    <div id="user-cost-bars" class="space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    // ─── CONFIGURATION ───────────────────────────────────────────────────────────
-    // 가격 단위: USD per 1M tokens
-    // NOTE: Gemini 3.x 가격은 실제 청구 가격으로 업데이트가 필요할 수 있습니다.
-    const modelPrices = {
-        'claude-4.6-sonnet':     { input:  3.00, output: 15.00, context:  200000 },
-        'claude-4.6-opus':       { input: 15.00, output: 75.00, context:  200000 },
-        'gemini-3.1-pro':        { input:  1.25, output: 10.00, context: 1048576 },
-        'gemini-3.0-flash':      { input:  0.30, output:  2.50, context: 1048576 },
-        'gemini-2.5-pro':        { input:  1.25, output: 10.00, context: 1048576 },
-        'gemini-2.5-flash':      { input:  0.30, output:  2.50, context: 1048576 },
-        'gemini-2.5-flash-lite': { input:  0.10, output:  0.40, context: 1048576 },
-        'grok-4.1-fast':         { input:  0.20, output:  0.50, context: 2000000 },
-    };
+// ─── CONFIG ──────────────────────────────────────────────────────────────────
+const MODELS = {
+    'claude-4.6-sonnet':     { input: 3.00,  output: 15.00, maxOutput: 1920, label: 'Claude 4.6 Sonnet',   short: 'Sonnet 4.6' },
+    'claude-4.6-opus':       { input: 15.00, output: 75.00, maxOutput: 1200, label: 'Claude 4.6 Opus',     short: 'Opus 4.6' },
+    'gemini-3.1-pro':        { input: 1.25,  output: 10.00, maxOutput: 2048, label: 'Gemini 3.1 Pro',      short: 'G3.1 Pro' },
+    'gemini-3.0-flash':      { input: 0.30,  output:  2.50, maxOutput: 1792, label: 'Gemini 3.0 Flash',    short: 'G3.0 Flash' },
+    'gemini-2.5-pro':        { input: 1.25,  output: 10.00, maxOutput: 1792, label: 'Gemini 2.5 Pro',      short: 'G2.5 Pro' },
+    'gemini-2.5-flash':      { input: 0.30,  output:  2.50, maxOutput: 1664, label: 'Gemini 2.5 Flash',    short: 'G2.5 Flash' },
+    'gemini-2.5-flash-lite': { input: 0.10,  output:  0.40, maxOutput: 1152, label: 'Gemini 2.5 FL',       short: 'G2.5 FL' },
+    'grok-4.1-fast':         { input: 0.20,  output:  0.50, maxOutput: 1408, label: 'Grok 4.1 Fast',       short: 'Grok 4.1' },
+};
 
-    const USD_TO_KRW              = 1470;
-    const BASE_SYSTEM_TOKENS      = 4000;  // 기본 시스템 프롬프트
-    const LONG_TERM_MEMORY_TOKENS = 1000;  // 장기기억 및 메모리 검색
-    const LOREBOOK_TOKENS         = 500;   // 로어북 벡터 검색
-    const GEMINI3_THINKING_TOKENS = 1000;  // Gemini 3 라인 Thinking tokens (output 비용)
+const MODEL_ORDER = [
+    'gemini-2.5-flash-lite','grok-4.1-fast','gemini-2.5-flash','gemini-3.0-flash',
+    'gemini-2.5-pro','gemini-3.1-pro','claude-4.6-sonnet','claude-4.6-opus'
+];
 
-    const scenarioPresets = {
-        'casual':   { input: 30,  output: 200, lorebook: false },
-        'story':    { input: 100, output: 600, lorebook: true  },
-        'roleplay': { input: 150, output: 400, lorebook: true  },
-        'custom':   { input: 50,  output: 800, lorebook: false },
-    };
+// episodeKeywords: Gemini 2.5 Flash Lite
+const EP = { iP: 0.10, oP: 0.40, sys: 806, inp: 454, out: 167 };
+// Long Term Memory: Gemini 2.5 Flash
+const LTM = { iP: 0.30, oP: 2.50, sys: 1054, baseInp: 2270, baseOut: 585 };
+// Amazon Titan Embed v2
+const EMBED = { pM: 0.02, tok: 1000 };
 
-    // ─── STATE ───────────────────────────────────────────────────────────────────
-    let conversationHistory = [];
-    let totalCostKRW = 0;
+const SYS_BASE = 5000;
+const SYS_MEM  = 800;
+const SYS_MEDIA = 1000;
+const SYS_NOTES = 3100;
 
-    // ─── DOM ─────────────────────────────────────────────────────────────────────
-    const dom = {
-        modelSelect:         document.getElementById('model-select'),
-        contextLimitInput:   document.getElementById('context-limit-input'),
-        modelMaxContext:     document.getElementById('model-max-context'),
-        modelPriceDisplay:   document.getElementById('model-price-display'),
-        thinkingBadge:       document.getElementById('thinking-badge'),
-        thinkingTokensRow:   document.getElementById('thinking-tokens-row'),
-        systemPrompt:        document.getElementById('system-prompt'),
-        systemTokenCount:    document.getElementById('system-token-count'),
-        inputSlider:         document.getElementById('input-slider'),
-        inputSliderValue:    document.getElementById('input-slider-value'),
-        outputSlider:        document.getElementById('output-slider'),
-        outputSliderValue:   document.getElementById('output-slider-value'),
-        useLorebookCheckbox: document.getElementById('use-lorebook'),
-        addTurnBtn:          document.getElementById('add-turn-btn'),
-        resetBtn:            document.getElementById('reset-btn'),
-        preview: {
-            cost:            document.getElementById('preview-cost'),
-            systemToken:     document.getElementById('preview-system-token'),
-            contextToken:    document.getElementById('preview-context-token'),
-            lorebookRow:     document.getElementById('preview-lorebook-row'),
-            lorebookToken:   document.getElementById('preview-lorebook-token'),
-            userInputToken:  document.getElementById('preview-user-input-token'),
-            totalInputToken: document.getElementById('preview-total-input-token'),
-            outputToken:     document.getElementById('preview-output-token'),
-            thinkingRow:     document.getElementById('preview-thinking-row'),
-        },
-        summary: {
-            totalCost:    document.getElementById('summary-total-cost'),
-            contextToken: document.getElementById('summary-context-token'),
-            turnCount:    document.getElementById('summary-turn-count'),
-            historyLog:   document.getElementById('history-log'),
-        },
-    };
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const fmt    = n => Math.round(n).toLocaleString('ko-KR');
+const fmtW   = (n, d=0) => '₩' + n.toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const getUSD = () => parseFloat(document.getElementById('usd-krw').value) || 1470;
 
-    // ─── UTILITIES ───────────────────────────────────────────────────────────────
-    const fmt    = (n) => Math.round(n).toLocaleString('ko-KR');
-    const fmtKRW = (n) => n.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function calcLTMRun(runIndex, growthPerRun) {
+    // output(n) = baseOut + n * growth (0-indexed)
+    // input(n)  = sys + baseInp + Σ_{k=0}^{n-1} output(k)
+    //           = sys + baseInp + n*baseOut + growth*n*(n-1)/2
+    const n = runIndex;
+    const sumPrevOut = n * LTM.baseOut + growthPerRun * n * (n - 1) / 2;
+    const inp = LTM.sys + LTM.baseInp + sumPrevOut;
+    const out = LTM.baseOut + n * growthPerRun;
+    const usd = (inp / 1e6) * LTM.iP + (out / 1e6) * LTM.oP;
+    return { inp, out, usd };
+}
 
-    function isGemini3(model) {
-        return model.startsWith('gemini-3');
-    }
+function simulateTurns(totalTurns, cfg) {
+    const model = MODELS[cfg.model];
+    const sysTok = SYS_BASE + SYS_MEM
+        + (cfg.hasMedia ? SYS_MEDIA : 0)
+        + (cfg.hasNotes ? SYS_NOTES : 0);
+    const mainInp = sysTok + cfg.avgInput;
+    const mainOut = model.maxOutput;
+    const mainUSDperTurn = (mainInp / 1e6) * model.input + (mainOut / 1e6) * model.output;
 
-    function estimateTokens(text) {
-        if (!text) return 0;
-        const koreanChars  = (text.match(/[가-힣]/g) || []).length;
-        const englishWords = (text.match(/[a-zA-Z]+/g) || []).length;
-        const otherChars   = text.length - koreanChars - (text.match(/[a-zA-Z]+/g) || []).join('').length;
-        const est1 = Math.ceil(koreanChars + (englishWords * 1.3) + (otherChars * 0.5));
-        const est2 = Math.ceil(text.length * 0.75);
-        return Math.max(est1, est2);
-    }
+    let epUSD = 0, ltmUSD = 0, embedUSD = 0;
+    let ltmRunCount = 0;
+    const ltmRows = [];
+    let cumulLTM = 0;
 
-    function getValues() {
-        const model = dom.modelSelect.value;
-        const maxWindow = parseFloat(dom.contextLimitInput.value) || 160000;
-        const extraSystemTokens = estimateTokens(dom.systemPrompt.value);
-        // 시스템 토큰 = 기본(4,000) + 장기기억(1,000) + 추가 입력
-        const systemTokens = BASE_SYSTEM_TOKENS + LONG_TERM_MEMORY_TOKENS + extraSystemTokens;
-        return {
-            model,
-            maxWindow,
-            systemTokens,
-            extraSystemTokens,
-            inputTokens:  parseInt(dom.inputSlider.value, 10),
-            outputTokens: parseInt(dom.outputSlider.value, 10),
-            useLorebook:  dom.useLorebookCheckbox.checked,
-        };
-    }
-
-    function calcEffectiveContext(maxWindow) {
-        let ctx = 0;
-        for (let i = conversationHistory.length - 1; i >= 0; i--) {
-            const t = conversationHistory[i].input + conversationHistory[i].output;
-            if (ctx + t > maxWindow) break;
-            ctx += t;
+    for (let t = 1; t <= totalTurns; t++) {
+        if (t >= 2 && cfg.epOn) {
+            epUSD += (EP.sys + EP.inp) / 1e6 * EP.iP + EP.out / 1e6 * EP.oP;
         }
-        return ctx;
-    }
-
-    function calcTurnCost({ model, systemTokens, effectiveContext, inputTokens, outputTokens, useLorebook }) {
-        const prices = modelPrices[model];
-        const lorebookTokens = useLorebook ? LOREBOOK_TOKENS : 0;
-        const thinkingTokens = isGemini3(model) ? GEMINI3_THINKING_TOKENS : 0;
-
-        const totalInput  = systemTokens + effectiveContext + inputTokens + lorebookTokens;
-        const totalOutput = outputTokens + thinkingTokens;
-
-        const costUSD = (totalInput  / 1_000_000) * prices.input
-                      + (totalOutput / 1_000_000) * prices.output;
-        return { costKRW: costUSD * USD_TO_KRW, totalInput, totalOutput, lorebookTokens };
-    }
-
-    // ─── UI UPDATES ──────────────────────────────────────────────────────────────
-    function updateModelInfo() {
-        const model  = dom.modelSelect.value;
-        const prices = modelPrices[model];
-        const g3     = isGemini3(model);
-
-        dom.modelPriceDisplay.textContent = `입력 $${prices.input}/M · 출력 $${prices.output}/M`;
-        dom.modelMaxContext.textContent   = fmt(prices.context);
-        dom.contextLimitInput.max         = prices.context;
-
-        if (parseFloat(dom.contextLimitInput.value) > prices.context) {
-            dom.contextLimitInput.value = prices.context;
-        }
-
-        dom.thinkingBadge.classList.toggle('hidden', !g3);
-        dom.thinkingTokensRow.classList.toggle('hidden', !g3);
-        dom.preview.thinkingRow.classList.toggle('hidden', !g3);
-    }
-
-    function previewCost() {
-        const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getValues();
-        const effectiveContext = calcEffectiveContext(maxWindow);
-
-        const { costKRW, totalInput, totalOutput, lorebookTokens } = calcTurnCost({
-            model, systemTokens, effectiveContext, inputTokens, outputTokens, useLorebook
-        });
-
-        dom.preview.cost.textContent             = `${fmtKRW(costKRW)} 원`;
-        dom.preview.systemToken.textContent      = fmt(systemTokens);
-        dom.preview.contextToken.textContent     = `${fmt(effectiveContext)} / ${fmt(maxWindow)}`;
-        dom.preview.userInputToken.textContent   = fmt(inputTokens);
-        dom.preview.totalInputToken.textContent  = fmt(totalInput);
-        dom.preview.outputToken.textContent      = fmt(totalOutput);
-
-        if (useLorebook) {
-            dom.preview.lorebookToken.textContent = fmt(lorebookTokens);
-            dom.preview.lorebookRow.classList.remove('hidden');
-        } else {
-            dom.preview.lorebookRow.classList.add('hidden');
+        // LTM fires at turns 6, 11, 16... i.e. t>=2 && (t-1)%5===0
+        if (t >= 2 && (t - 1) % 5 === 0 && cfg.ltmOn) {
+            const runIdx = Math.floor((t - 1) / 5) - 1;
+            const run = calcLTMRun(runIdx, cfg.ltmGrowth);
+            ltmUSD += run.usd;
+            embedUSD += EMBED.tok / 1e6 * EMBED.pM;
+            ltmRunCount++;
+            cumulLTM += run.usd;
+            if (ltmRows.length < 25) {
+                ltmRows.push({ num: ltmRunCount, turn: t, inp: run.inp, out: run.out, usd: run.usd, cumul: cumulLTM });
+            }
         }
     }
 
-    function handleAddTurn() {
-        const { model, maxWindow, systemTokens, inputTokens, outputTokens, useLorebook } = getValues();
-        const effectiveContext = calcEffectiveContext(maxWindow);
+    const mainUSD  = mainUSDperTurn * totalTurns;
+    const totalUSD = mainUSD + epUSD + ltmUSD + embedUSD;
 
-        const { costKRW } = calcTurnCost({
-            model, systemTokens, effectiveContext, inputTokens, outputTokens, useLorebook
+    return { mainUSD, epUSD, ltmUSD, embedUSD, totalUSD, ltmRunCount, ltmRows,
+             perTurnUSD: totalUSD / Math.max(totalTurns, 1), sysTok, mainInp, mainOut };
+}
+
+// ─── DOM REFERENCES ───────────────────────────────────────────────────────────
+const $  = id => document.getElementById(id);
+const mainModelEl   = $('main-model');
+const optMedia      = $('opt-media');
+const optNotes      = $('opt-notes');
+const userInpSlider = $('user-input-slider');
+const userInpVal    = $('user-input-val');
+const toggleEp      = $('toggle-episode');
+const toggleLTM     = $('toggle-ltm');
+const simTurnsSlider = $('sim-turns-slider');
+const simTurnsVal   = $('sim-turns-val');
+const ltmGrowthSlider = $('ltm-growth-slider');
+const ltmGrowthVal  = $('ltm-growth-val');
+const usdKrwEl      = $('usd-krw');
+
+// ─── SESSION CONFIG READER ────────────────────────────────────────────────────
+function getSessionCfg() {
+    return {
+        model:     mainModelEl.value,
+        hasMedia:  optMedia.checked,
+        hasNotes:  optNotes.checked,
+        avgInput:  parseInt(userInpSlider.value) || 75,
+        epOn:      toggleEp.checked,
+        ltmOn:     toggleLTM.checked,
+        ltmGrowth: parseInt(ltmGrowthSlider.value) || 150,
+    };
+}
+
+// ─── UPDATE FUNCTIONS ─────────────────────────────────────────────────────────
+function updateLivePreview() {
+    const cfg   = getSessionCfg();
+    const model = MODELS[cfg.model];
+    const rate  = getUSD();
+
+    const sysTok = SYS_BASE + SYS_MEM
+        + (cfg.hasMedia ? SYS_MEDIA : 0)
+        + (cfg.hasNotes ? SYS_NOTES : 0);
+    $('total-sys-tok').textContent = fmt(sysTok);
+
+    const mainInp = sysTok + cfg.avgInput;
+    const mainOut = model.maxOutput;
+    const mainUSD = (mainInp / 1e6) * model.input + (mainOut / 1e6) * model.output;
+
+    const epUSD = cfg.epOn
+        ? (EP.sys + EP.inp) / 1e6 * EP.iP + EP.out / 1e6 * EP.oP
+        : 0;
+
+    const ltm0  = calcLTMRun(0, cfg.ltmGrowth);
+    const ltmFirstUSD = cfg.ltmOn ? ltm0.usd : 0;
+
+    $('live-ep-cost').textContent   = fmtW(epUSD * rate, 2);
+    $('live-main-cost').textContent = fmtW(mainUSD * rate, 2);
+    $('live-main-model').textContent = model.short || model.label;
+    $('live-total-cost').textContent = fmtW((epUSD + mainUSD) * rate, 2);
+    $('live-main-in').textContent    = fmt(mainInp) + ' tok';
+    $('live-main-out').textContent   = fmt(mainOut) + ' tok (max)';
+    $('live-ltm-first').textContent  = fmtW(ltmFirstUSD * rate, 2);
+    $('live-ltm-growth').textContent = '+' + cfg.ltmGrowth + ' tok/회';
+
+    $('model-price-info').textContent = `$${model.input}/M in · $${model.output}/M out`;
+    $('model-max-out').textContent    = `max ${fmt(model.maxOutput)} tok out`;
+    $('main-chat-sublabel').textContent = `${model.label} · 매 턴`;
+}
+
+function updateSimulation() {
+    const cfg       = getSessionCfg();
+    const totalTurns = parseInt(simTurnsSlider.value) || 20;
+    const rate      = getUSD();
+    const res       = simulateTurns(totalTurns, cfg);
+
+    $('sim-badge').textContent = `${totalTurns}턴 기준`;
+    $('sim-total').textContent = fmtW(res.totalUSD * rate);
+    $('sim-per-turn').textContent = fmtW(res.perTurnUSD * rate, 2);
+    $('sim-ltm-runs').textContent = res.ltmRunCount;
+    const ltmPct = res.totalUSD > 0 ? Math.round(res.ltmUSD / res.totalUSD * 100) : 0;
+    $('sim-ltm-pct').textContent = ltmPct + '%';
+
+    const t = res.totalUSD;
+    const mainK  = res.mainUSD  * rate;
+    const ltmK   = res.ltmUSD   * rate;
+    const epK    = res.epUSD    * rate;
+    const embedK = res.embedUSD * rate;
+    const totalK = t * rate;
+
+    $('sim-main-krw').textContent  = `${fmtW(mainK)}  (${Math.round(res.mainUSD/t*100)||0}%)`;
+    $('sim-ltm-krw').textContent   = `${fmtW(ltmK)}  (${Math.round(res.ltmUSD/t*100)||0}%)`;
+    $('sim-ep-krw').textContent    = `${fmtW(epK)}  (${Math.round(res.epUSD/t*100)||0}%)`;
+    $('sim-embed-krw').textContent = `${fmtW(embedK)}  (<1%)`;
+
+    $('bar-main').style.width  = `${totalK > 0 ? mainK/totalK*100 : 0}%`;
+    $('bar-ltm').style.width   = `${totalK > 0 ? ltmK/totalK*100 : 0}%`;
+    $('bar-ep').style.width    = `${totalK > 0 ? epK/totalK*100 : 0}%`;
+    $('bar-embed').style.width = `${totalK > 0 ? Math.max(embedK/totalK*100, 0.5) : 0}%`;
+
+    // LTM growth table
+    const tbody = $('ltm-tbody');
+    tbody.innerHTML = '';
+    if (!cfg.ltmOn || res.ltmRows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="py-3 text-center text-gray-400 text-xs">LTM 비활성화 또는 실행 없음</td></tr>';
+    } else {
+        res.ltmRows.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-50 hover:bg-gray-50';
+            tr.innerHTML = `
+                <td class="py-2 font-bold text-purple-700">${r.num}회</td>
+                <td class="py-2 text-gray-500">턴 ${r.turn}</td>
+                <td class="py-2 text-right text-gray-700">${fmt(r.inp)}</td>
+                <td class="py-2 text-right text-gray-700">${fmt(r.out)}</td>
+                <td class="py-2 text-right font-semibold text-gray-800">${fmtW(r.usd * rate, 2)}</td>
+                <td class="py-2 text-right font-bold text-purple-700">${fmtW(r.cumul * rate, 2)}</td>
+            `;
+            tbody.appendChild(tr);
         });
+    }
+}
 
-        totalCostKRW += costKRW;
-        conversationHistory.push({
-            turn: conversationHistory.length + 1,
-            input: inputTokens,
-            output: outputTokens,
-            usedLorebook: useLorebook,
-        });
+function updateScaleTable() {
+    const cfg   = getSessionCfg();
+    const rate  = getUSD();
+    const dau   = parseInt($('scale-dau').value) || 1000;
+    const sess  = parseInt($('scale-sess').value) || 1;
+    const turns = parseInt($('scale-turns').value) || 20;
 
-        const turn = conversationHistory[conversationHistory.length - 1];
-        const totalAccCtx = conversationHistory.reduce((s, t) => s + t.input + t.output, 0);
-        const newEffCtx   = calcEffectiveContext(maxWindow);
+    // Update display values
+    $('scale-dau-val').textContent   = fmt(dau) + '명';
+    $('scale-sess-val').textContent  = sess + ' 세션';
+    $('scale-turns-val').textContent = turns + ' 턴';
+    $('scale-daily-sess').textContent = fmt(dau * sess);
+    $('scale-sess-info').textContent = turns + ' 턴';
+    $('scale-daily-turns').textContent = fmt(dau * sess * turns) + ' 턴';
 
-        dom.summary.totalCost.textContent    = `${fmtKRW(totalCostKRW)} 원`;
-        dom.summary.contextToken.textContent = `${fmt(newEffCtx)} / ${fmt(totalAccCtx)}`;
-        dom.summary.turnCount.textContent    = `${fmt(conversationHistory.length)} 회`;
+    // Banner
+    const sysTok = SYS_BASE + SYS_MEM
+        + (cfg.hasMedia ? SYS_MEDIA : 0)
+        + (cfg.hasNotes ? SYS_NOTES : 0);
+    $('scale-model-name').textContent  = MODELS[cfg.model]?.short || cfg.model;
+    $('scale-sys-tok').textContent     = fmt(sysTok) + ' tok';
+    $('scale-ep-status').textContent   = cfg.epOn ? '활성' : '비활성';
+    $('scale-ltm-status').textContent  = cfg.ltmOn ? '활성' : '비활성';
 
-        if (conversationHistory.length === 1) dom.summary.historyLog.innerHTML = '';
-        const entry = document.createElement('p');
-        entry.innerHTML = `<strong>Turn ${turn.turn}:</strong> In ${fmt(turn.input)} / Out ${fmt(turn.output)}`
-            + (turn.usedLorebook ? ' <span class="text-violet-500">[로어북]</span>' : '');
-        dom.summary.historyLog.appendChild(entry);
-        dom.summary.historyLog.scrollTop = dom.summary.historyLog.scrollHeight;
+    const dailySessions = dau * sess;
+    const selectedModel = cfg.model;
 
-        previewCost();
+    const tbody = $('model-compare-tbody');
+    const barsDiv = $('user-cost-bars');
+    tbody.innerHTML = '';
+    barsDiv.innerHTML = '';
+
+    const results = MODEL_ORDER.map(key => {
+        const simCfg = { ...cfg, model: key };
+        const res = simulateTurns(turns, simCfg);
+        const perSessUSD   = res.totalUSD;
+        const dailyUSD     = perSessUSD * dailySessions;
+        const monthlyUSD   = dailyUSD * 30;
+        const perUserMonUSD = monthlyUSD / Math.max(dau, 1);
+        return { key, perSessUSD, dailyUSD, monthlyUSD, perUserMonUSD };
+    });
+
+    // Update selected model summary
+    const sel = results.find(r => r.key === selectedModel);
+    if (sel) {
+        $('scale-per-sess').textContent    = fmtW(sel.perSessUSD * rate);
+        $('scale-daily-cost').textContent  = fmtW(sel.dailyUSD * rate);
+        $('scale-monthly-cost').textContent = fmtW(sel.monthlyUSD * rate);
     }
 
-    function resetConversation() {
-        conversationHistory = [];
-        totalCostKRW = 0;
+    const maxUserCost = Math.max(...results.map(r => r.perUserMonUSD));
 
-        const m = modelPrices[dom.modelSelect.value];
-        dom.contextLimitInput.value     = Math.floor(m.context * 0.8).toString();
-        dom.useLorebookCheckbox.checked = false;
-        dom.inputSlider.value           = 50;
-        dom.outputSlider.value          = 800;
-        dom.inputSliderValue.textContent  = fmt(50);
-        dom.outputSliderValue.textContent = fmt(800);
+    results.forEach(r => {
+        const isSelected = r.key === selectedModel;
+        const model = MODELS[r.key];
 
-        dom.summary.historyLog.innerHTML     = '<p>아직 대화 기록이 없습니다.</p>';
-        dom.summary.totalCost.textContent    = `${fmtKRW(0)} 원`;
-        dom.summary.contextToken.textContent = '0 / 0';
-        dom.summary.turnCount.textContent    = '0 회';
+        // Table row
+        const tr = document.createElement('tr');
+        tr.className = `border-b border-gray-50 ${isSelected ? 'bg-blue-50' : 'hover:bg-gray-50'}`;
+        tr.innerHTML = `
+            <td class="py-2.5 font-semibold ${isSelected ? 'text-blue-700' : 'text-gray-700'}">${model.label}${isSelected ? ' ✓' : ''}</td>
+            <td class="py-2.5 text-right text-gray-600">${fmtW(r.perSessUSD * rate)}</td>
+            <td class="py-2.5 text-right text-gray-600">${fmtW(r.dailyUSD * rate)}</td>
+            <td class="py-2.5 text-right font-bold ${isSelected ? 'text-blue-700' : 'text-gray-800'}">${fmtW(r.monthlyUSD * rate)}</td>
+            <td class="py-2.5 text-right text-gray-600">${fmtW(r.perUserMonUSD * rate)}</td>
+        `;
+        tbody.appendChild(tr);
 
-        previewCost();
+        // Bar
+        const barW = maxUserCost > 0 ? (r.perUserMonUSD / maxUserCost * 100) : 0;
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-3';
+        div.innerHTML = `
+            <span class="text-xs text-gray-600 w-24 shrink-0">${model.short || model.label}</span>
+            <div class="flex-1 bg-gray-100 rounded-full overflow-hidden" style="height:20px">
+                <div class="${isSelected ? 'bg-blue-500' : 'bg-gray-300'} h-full rounded-full transition-all" style="width:${barW}%"></div>
+            </div>
+            <span class="text-xs font-bold ${isSelected ? 'text-blue-700' : 'text-gray-700'} w-20 text-right shrink-0">${fmtW(r.perUserMonUSD * rate)}</span>
+        `;
+        barsDiv.appendChild(div);
+    });
+}
+
+function updateAll() {
+    updateLivePreview();
+    updateSimulation();
+    if (!$('panel-scale').classList.contains('hidden')) {
+        updateScaleTable();
     }
+}
 
-    function applyScenario(scenario) {
-        const preset = scenarioPresets[scenario];
-        dom.inputSlider.value           = preset.input;
-        dom.outputSlider.value          = preset.output;
-        dom.useLorebookCheckbox.checked = preset.lorebook;
-        dom.inputSliderValue.textContent  = fmt(preset.input);
-        dom.outputSliderValue.textContent = fmt(preset.output);
+// ─── EVENT LISTENERS ─────────────────────────────────────────────────────────
+// Tab switch
+$('tab-session').addEventListener('click', () => {
+    $('tab-session').classList.add('active');
+    $('tab-scale').classList.remove('active');
+    $('panel-session').classList.remove('hidden');
+    $('panel-scale').classList.add('hidden');
+});
+$('tab-scale').addEventListener('click', () => {
+    $('tab-scale').classList.add('active');
+    $('tab-session').classList.remove('active');
+    $('panel-scale').classList.remove('hidden');
+    $('panel-session').classList.add('hidden');
+    updateScaleTable();
+});
 
-        document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
-        document.querySelector(`[data-scenario="${scenario}"]`).classList.add('selected');
-        previewCost();
-    }
+// Session tab inputs
+[mainModelEl, optMedia, optNotes, toggleEp, toggleLTM, usdKrwEl].forEach(el => {
+    el.addEventListener('change', updateAll);
+});
 
-    // ─── EVENT LISTENERS ─────────────────────────────────────────────────────────
-    dom.addTurnBtn.addEventListener('click', handleAddTurn);
-    dom.resetBtn.addEventListener('click', resetConversation);
+userInpSlider.addEventListener('input', e => {
+    userInpVal.textContent = e.target.value;
+    updateAll();
+});
+simTurnsSlider.addEventListener('input', e => {
+    simTurnsVal.textContent = e.target.value + ' 턴';
+    updateAll();
+});
+ltmGrowthSlider.addEventListener('input', e => {
+    ltmGrowthVal.textContent = '+' + e.target.value + ' tok/회';
+    updateAll();
+});
+usdKrwEl.addEventListener('input', updateAll);
 
-    document.querySelectorAll('.scenario-card').forEach(card => {
-        card.addEventListener('click', () => applyScenario(card.dataset.scenario));
-    });
+// Scale tab inputs
+[$('scale-dau'), $('scale-sess'), $('scale-turns')].forEach(el => {
+    el.addEventListener('input', updateScaleTable);
+});
 
-    dom.modelSelect.addEventListener('change', () => {
-        updateModelInfo();
-        previewCost();
-    });
-
-    dom.useLorebookCheckbox.addEventListener('change', previewCost);
-    dom.contextLimitInput.addEventListener('input', previewCost);
-
-    dom.systemPrompt.addEventListener('input', () => {
-        dom.systemTokenCount.textContent = fmt(estimateTokens(dom.systemPrompt.value));
-        previewCost();
-    });
-
-    dom.inputSlider.addEventListener('input', () => {
-        dom.inputSliderValue.textContent = fmt(parseInt(dom.inputSlider.value));
-        previewCost();
-    });
-
-    dom.outputSlider.addEventListener('input', () => {
-        dom.outputSliderValue.textContent = fmt(parseInt(dom.outputSlider.value));
-        previewCost();
-    });
-
-    // ─── INIT ────────────────────────────────────────────────────────────────────
-    updateModelInfo();
-    applyScenario('casual');
-    previewCost();
+// ─── INIT ────────────────────────────────────────────────────────────────────
+updateAll();
 </script>
 </body>
 </html>
